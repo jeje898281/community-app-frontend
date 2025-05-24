@@ -1,0 +1,106 @@
+/* 掃描頁全局樣式 */
+.scan-page {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f8f9fa; /* 背景色：淡灰 */
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* 標題樣式 */
+.page-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.page-description {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* 掃描功能區 */
+.scanner-container {
+  border: 2px dashed #007bff; /* 虛線邊框 */
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+/* 結果區 */
+.result-container {
+  margin-top: 20px;
+  font-size: 18px;
+}
+
+.scan-result {
+  color: #007bff; /* 藍色結果 */
+  font-weight: bold;
+}
+
+.error-message {
+  color: #dc3545; /* 錯誤訊息：紅色 */
+  font-weight: bold;
+}
+
+/* ====== RWD 設計 ====== */
+
+/* 平板與中型裝置（螢幕寬度 ≤ 768px） */
+@media (max-width: 768px) {
+  .scan-page {
+    max-width: 90%; /* 減少寬度限制 */
+    margin: 10px auto;
+    padding: 15px;
+  }
+
+  .page-title {
+    font-size: 20px; /* 縮小標題字體 */
+  }
+
+  .page-description {
+    font-size: 14px; /* 縮小描述字體 */
+  }
+
+  .scanner-container {
+    min-height: 150px; /* 減小掃描區高度 */
+    padding: 15px; /* 減少內距 */
+  }
+
+  .result-container {
+    font-size: 16px; /* 縮小結果字體 */
+  }
+}
+
+/* 手機與小型裝置（螢幕寬度 ≤ 480px） */
+@media (max-width: 480px) {
+  .scan-page {
+    max-width: 100%;
+    padding: 10px;
+  }
+
+  .page-title {
+    font-size: 18px; /* 再次縮小標題字體 */
+  }
+
+  .page-description {
+    font-size: 12px; /* 再次縮小描述字體 */
+  }
+
+  .scanner-container {
+    min-height: 120px; /* 最小高度調整為 120px */
+    padding: 10px; /* 減少內距 */
+    border-width: 1px; /* 縮小邊框粗細 */
+  }
+
+  .result-container {
+    font-size: 14px; /* 字體進一步縮小 */
+  }
+}

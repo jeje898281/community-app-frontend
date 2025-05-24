@@ -1,0 +1,103 @@
+/* 外層容器樣式 */
+.checkin-container {
+  max-width: 400px;
+  margin: 20px auto; /* 置中 */
+  padding: 20px;
+  background-color: #f8f9fa; /* 背景：淡灰 */
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 卡片樣式 */
+  text-align: center;
+}
+
+/* 標題與描述 */
+.checkin-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.checkin-description {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* 輸入區域 */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* 按鈕與輸入框間距 */
+}
+
+.checkin-input {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc; /* 淺灰邊框 */
+  border-radius: 5px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.checkin-input:focus {
+  border-color: #007bff; /* 聚焦時邊框變藍 */
+}
+
+/* 按鈕樣式 */
+.checkin-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #007bff; /* 藍色按鈕 */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.checkin-button:hover {
+  background-color: #0056b3; /* 按鈕 hover 深藍 */
+}
+
+/* ====== RWD 設計 ====== */
+
+/* 平板與中型裝置（螢幕寬度 ≤ 768px） */
+@media (max-width: 768px) {
+  .checkin-container {
+    max-width: 90%; /* 縮小容器寬度 */
+    padding: 15px;
+  }
+
+  .checkin-title {
+    font-size: 20px; /* 縮小標題字體 */
+  }
+
+  .checkin-description {
+    font-size: 12px; /* 縮小描述字體 */
+  }
+
+  .checkin-input,
+  .checkin-button {
+    font-size: 14px; /* 縮小輸入框與按鈕字體 */
+  }
+}
+
+/* 手機與小型裝置（螢幕寬度 ≤ 480px） */
+@media (max-width: 480px) {
+  .checkin-container {
+    max-width: 100%; /* 全屏寬度 */
+    padding: 10px;
+  }
+
+  .input-group {
+    flex-direction: column; /* 垂直排列 */
+    gap: 10px;
+  }
+
+  .checkin-input,
+  .checkin-button {
+    font-size: 14px;
+    padding: 10px;
+  }
+}

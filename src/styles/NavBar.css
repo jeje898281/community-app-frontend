@@ -1,0 +1,93 @@
+/* 基本樣式 */
+.navbar {
+  background-color: #333; /* 深色背景 */
+  color: white;
+  padding: 10px 20px;
+  font-family: Arial, sans-serif;
+  position: sticky; /* 固定在頂部 */
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between; /* 左右對齊 */
+  align-items: center; /* 垂直置中 */
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  text-decoration: none;
+  color: white;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px; /* 間距 */
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li {
+  position: relative;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease; /* 平滑過渡效果 */
+}
+
+/* 滑鼠懸停效果 */
+.nav-links a:hover {
+  background-color: #555; /* Hover 顏色 */
+}
+
+/* 當前頁面高亮 */
+.nav-links .active a {
+  background-color: #007bff; /* 高亮藍色 */
+  color: white;
+}
+
+/* 手機版：隱藏連結 */
+.hamburger {
+  display: none;
+  font-size: 24px;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* 手機版的連結樣式 */
+.nav-links.open {
+  display: flex;
+  flex-direction: column; /* 垂直排列 */
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background-color: #333; /* 背景與 NavBar 一致 */
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.nav-links.open li {
+  margin: 10px 0;
+}
+
+/* 響應式設計：手機版顯示漢堡選單 */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none; /* 預設隱藏 */
+  }
+
+  .hamburger {
+    display: block; /* 小螢幕顯示漢堡按鈕 */
+  }
+}

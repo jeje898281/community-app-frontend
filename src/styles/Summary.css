@@ -1,0 +1,33 @@
+.container {
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.title {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.stats {
+  font-size: 1rem;
+  margin: 5px 0;
+}
+
+.threshold {
+  font-weight: bold;
+}
+
+.threshold-reached {
+  color: green;
+}
+
+.threshold-not-reached {
+  color: red;
+}
+
+.error {
+  color: red;
+}
