@@ -1,67 +1,92 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import '../styles/NavBar.css'; // 外部 CSS
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import '../styles/NavBar.css';
+import { useAuth } from '../contexts/AuthContext';
 
-function NavBar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // 控制漢堡選單展開
-  const location = useLocation(); // React Router 的 Hook，用於取得當前路由
-  const navRef = useRef(null); // 用於監測點擊是否發生在 NavBar 內
+export default function NavBar() {
+  const { isLoggedIn, displayName, communityName, role, logout } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const menuRef = useRef(null);
 
-  // 切換選單展開狀態
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  // 點擊漢堡 / 嘗試開啟下拉選單
+  const toggleMenu = () => setIsMenuOpen(open => !open);
 
-  // 點擊外部時關閉選單
-  const handleClickOutside = (event) => {
-    if (navRef.current && !navRef.current.contains(event.target)) {
-      setIsMenuOpen(false); // 如果點擊的地方不在 NavBar，關閉選單
-    }
-  };
-
-  // 添加和移除全局點擊事件監聽器
+  // 點擊外部收起
   useEffect(() => {
-    if (isMenuOpen) {
-      document.addEventListener('click', handleClickOutside);
-    } else {
-      document.removeEventListener('click', handleClickOutside);
-    }
-
-    // 清理事件監聽器
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
+    const handleClickOutside = e => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setIsMenuOpen(false);
+      }
     };
-  }, [isMenuOpen]);
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
 
   return (
-    <nav className="navbar" ref={navRef}>
+    <nav className="navbar" ref={menuRef}>
       <div className="navbar-container">
-        {/* Logo */}
-        <Link to="/" className="logo">麗寶國際館</Link>
+        <Link to="/" className="logo">
+          {communityName || '社區系統'}
+        </Link>
 
-        {/* 漢堡選單按鈕 (手機版顯示) */}
-        <button className="hamburger" onClick={toggleMenu}>
-          ☰
-        </button>
-
-        {/* 導覽連結 (手機版根據 isMenuOpen 顯示隱藏) */}
-        <ul className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
+        <ul className="nav-links">
           <li className={location.pathname === '/' ? 'active' : ''}>
             <Link to="/">首頁</Link>
           </li>
-          <li className={location.pathname === '/scan' ? 'active' : ''}>
-            <Link to="/scan">掃描頁</Link>
-          </li>
-          <li className={location.pathname === '/manual' ? 'active' : ''}>
-            <Link to="/manual">手動輸入</Link>
-          </li>
-          <li className={location.pathname === '/summary' ? 'active' : ''}>
-            <Link to="/summary">查看結果</Link>
-          </li>
+
+          {isLoggedIn && (
+            <>
+              <li className={location.pathname.startsWith('/meetings') ? 'active' : ''}>
+                <Link to="/meetings">會議管理</Link>
+              </li>
+
+              {(role === 'admin' || role === 'manager') && (
+                <li className={location.pathname === '/residents' ? 'active' : ''}>
+                  <Link to="/residents">住戶清單</Link>
+                </li>
+              )}
+            </>
+          )}
         </ul>
+
+        <div className="user-section">
+          {!isLoggedIn ? (
+            <Link to="/login" className="btn-login">登入</Link>
+          ) : (
+            <div className="user-dropdown">
+              <button className="user-btn" onClick={toggleMenu}>
+                {displayName}
+              </button>
+              {isMenuOpen && (
+                <ul className="dropdown-menu">
+                  <li>
+                    <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
+                      個人資料
+                    </Link>
+                  </li>
+                  {role === 'admin' && (
+                    <li className={location.pathname === '/communities' ? 'active' : ''}>
+                      <Link to="/communities">社區管理</Link>
+                    </li>
+                  )}
+                  <li>
+                    <button onClick={handleLogout} className="logout-btn">
+                      登出
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   );
 }
-
-export default NavBar;

@@ -1,106 +1,285 @@
-/* 掃描頁全局樣式 */
+/* QR掃描頁面現代化樣式 */
 .scan-page {
-  max-width: 600px;
-  margin: 20px auto;
-  padding: 20px;
-  background-color: #f8f9fa; /* 背景色：淡灰 */
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-/* 標題樣式 */
-.page-title {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.page-description {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 20px;
-}
-
-/* 掃描功能區 */
-.scanner-container {
-  border: 2px dashed #007bff; /* 虛線邊框 */
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 8px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--space-6);
+  min-height: calc(100vh - 4rem);
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
   display: flex;
-  justify-content: center;
   align-items: center;
-  min-height: 200px;
+  justify-content: center;
 }
 
-/* 結果區 */
-.result-container {
-  margin-top: 20px;
-  font-size: 18px;
+/* 掃描容器 */
+.scan-container {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: var(--space-8);
+  margin-bottom: var(--space-8);
+  position: relative;
+  width: 100%;
+  max-width: 900px;
 }
 
-.scan-result {
-  color: #007bff; /* 藍色結果 */
-  font-weight: bold;
+.scan-container.scan-success {
+  animation: successPulse 2s ease-in-out;
+}
+
+@keyframes successPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+/* 掃描器區域 */
+.scanner-wrapper {
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.scanner-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-500), var(--success-500), var(--primary-600));
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.scanner-frame {
+  position: relative;
+  aspect-ratio: 1;
+  max-width: 400px;
+  margin: 0 auto;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--gray-900);
+  box-shadow: inset 0 0 0 2px var(--primary-500);
+}
+
+/* 掃描框角落裝飾 */
+.corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--primary-500);
+  z-index: 10;
+}
+
+.corner-tl {
+  top: 10px;
+  left: 10px;
+  border-right: none;
+  border-bottom: none;
+  border-radius: var(--radius-sm) 0 0 0;
+}
+
+.corner-tr {
+  top: 10px;
+  right: 10px;
+  border-left: none;
+  border-bottom: none;
+  border-radius: 0 var(--radius-sm) 0 0;
+}
+
+.corner-bl {
+  bottom: 10px;
+  left: 10px;
+  border-right: none;
+  border-top: none;
+  border-radius: 0 0 0 var(--radius-sm);
+}
+
+.corner-br {
+  bottom: 10px;
+  right: 10px;
+  border-left: none;
+  border-top: none;
+  border-radius: 0 0 var(--radius-sm) 0;
+}
+
+/* 處理中遮罩 */
+.processing-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(37, 99, 235, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-white);
+  z-index: 20;
+  backdrop-filter: blur(4px);
+}
+
+.processing-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid var(--text-white);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--space-2);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 結果區域 */
+.result-section {
+  display: flex;
+  align-items: stretch;
+}
+
+.result-card {
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-base);
+  border: 1px solid var(--border-light);
+  text-align: center;
+  width: 100%;
+}
+
+.result-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-4);
+}
+
+.result-card h3 {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  margin-bottom: var(--space-4);
+}
+
+.error-card {
+  border-color: var(--error-200);
+  background: linear-gradient(135deg, var(--error-50) 0%, var(--bg-primary) 100%);
+}
+
+.error-card h3 {
+  color: var(--error-700);
 }
 
 .error-message {
-  color: #dc3545; /* 錯誤訊息：紅色 */
-  font-weight: bold;
+  color: var(--error-600);
+  margin-bottom: var(--space-4);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
 }
 
-/* ====== RWD 設計 ====== */
+.success-card {
+  border-color: var(--success-200);
+  background: linear-gradient(135deg, var(--success-50) 0%, var(--bg-primary) 100%);
+  animation: slideInRight 0.6s ease-out;
+}
 
-/* 平板與中型裝置（螢幕寬度 ≤ 768px） */
+.success-card h3 {
+  color: var(--success-700);
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.waiting-card {
+  background: linear-gradient(135deg, var(--primary-50) 0%, var(--bg-primary) 100%);
+  border-color: var(--primary-200);
+}
+
+.waiting-card .result-icon {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.scan-result {
+  margin: var(--space-4) 0;
+  padding: var(--space-4);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-base);
+  border-left: 4px solid var(--success-500);
+}
+
+.result-label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.result-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--success-700);
+  font-weight: 600;
+  word-break: break-all;
+  background: var(--bg-primary);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  margin: 0;
+}
+
+.result-actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.result-actions .btn {
+  flex: 1;
+  font-size: var(--text-sm);
+}
+
+/* 響應式設計 */
 @media (max-width: 768px) {
   .scan-page {
-    max-width: 90%; /* 減少寬度限制 */
-    margin: 10px auto;
-    padding: 15px;
+    padding: var(--space-4);
+    align-items: flex-start;
+    padding-top: var(--space-8);
   }
 
-  .page-title {
-    font-size: 20px; /* 縮小標題字體 */
+  .scan-container {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
   }
 
-  .page-description {
-    font-size: 14px; /* 縮小描述字體 */
+  .scanner-wrapper {
+    padding: var(--space-4);
   }
 
-  .scanner-container {
-    min-height: 150px; /* 減小掃描區高度 */
-    padding: 15px; /* 減少內距 */
-  }
-
-  .result-container {
-    font-size: 16px; /* 縮小結果字體 */
+  .scanner-frame {
+    max-width: 300px;
   }
 }
 
-/* 手機與小型裝置（螢幕寬度 ≤ 480px） */
 @media (max-width: 480px) {
-  .scan-page {
-    max-width: 100%;
-    padding: 10px;
+  .scanner-frame {
+    max-width: 250px;
   }
 
-  .page-title {
-    font-size: 18px; /* 再次縮小標題字體 */
-  }
-
-  .page-description {
-    font-size: 12px; /* 再次縮小描述字體 */
-  }
-
-  .scanner-container {
-    min-height: 120px; /* 最小高度調整為 120px */
-    padding: 10px; /* 減少內距 */
-    border-width: 1px; /* 縮小邊框粗細 */
-  }
-
-  .result-container {
-    font-size: 14px; /* 字體進一步縮小 */
+  .result-actions {
+    flex-direction: column;
   }
 }

@@ -1,3 +1,4 @@
+//src/components/QrScanner.jsx
 import React, { useEffect, useCallback, useState } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { scanAttendance } from '../services/api';
@@ -74,10 +75,6 @@ function QrScanner({ onScanSuccess }) {
 
   return (
     <div className="qr-scanner-container">
-      {/* 掃描區域標題 */}
-      <h2 className="scanner-title">請掃描 QR Code</h2>
-      <p className="scanner-description">將 QR Code 放入框內，系統將自動識別。</p>
-
       {/* 掃描框 */}
       <div id="qr-reader" className="qr-reader" />
 

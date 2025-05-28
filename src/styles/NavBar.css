@@ -1,31 +1,54 @@
-/* 基本樣式 */
+/* 現代化導航欄樣式 */
 .navbar {
-  background-color: #333; /* 深色背景 */
-  color: white;
-  padding: 10px 20px;
-  font-family: Arial, sans-serif;
-  position: sticky; /* 固定在頂部 */
+  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-lg);
+  position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: var(--z-sticky);
+  transition: all var(--transition-base);
 }
 
 .navbar-container {
   display: flex;
-  justify-content: space-between; /* 左右對齊 */
-  align-items: center; /* 垂直置中 */
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+  height: 4rem;
 }
 
+/* Logo 樣式 */
 .logo {
-  font-size: 20px;
-  font-weight: bold;
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--text-white);
   text-decoration: none;
-  color: white;
+  letter-spacing: -0.025em;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
+.logo:hover {
+  color: var(--primary-100);
+  transform: scale(1.05);
+}
+
+.logo::before {
+  content: "🏘️";
+  font-size: 1.5rem;
+}
+
+/* 導航連結 */
 .nav-links {
-  list-style: none;
   display: flex;
-  gap: 20px; /* 間距 */
+  align-items: center;
+  gap: var(--space-1);
+  list-style: none;
   margin: 0;
   padding: 0;
 }
@@ -35,59 +58,251 @@
 }
 
 .nav-links a {
-  text-decoration: none;
-  color: white;
-  font-size: 16px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  transition: background-color 0.3s ease; /* 平滑過渡效果 */
-}
-
-/* 滑鼠懸停效果 */
-.nav-links a:hover {
-  background-color: #555; /* Hover 顏色 */
-}
-
-/* 當前頁面高亮 */
-.nav-links .active a {
-  background-color: #007bff; /* 高亮藍色 */
-  color: white;
-}
-
-/* 手機版：隱藏連結 */
-.hamburger {
-  display: none;
-  font-size: 24px;
-  color: white;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-/* 手機版的連結樣式 */
-.nav-links.open {
   display: flex;
-  flex-direction: column; /* 垂直排列 */
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: var(--text-sm);
+  border-radius: var(--radius-base);
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-links a::before {
+  content: '';
   position: absolute;
-  top: 60px;
-  right: 20px;
-  background-color: #333; /* 背景與 NavBar 一致 */
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  transition: width var(--transition-base);
+  z-index: -1;
 }
 
-.nav-links.open li {
-  margin: 10px 0;
+.nav-links a:hover::before {
+  width: 100%;
 }
 
-/* 響應式設計：手機版顯示漢堡選單 */
+.nav-links a:hover {
+  color: var(--text-white);
+  transform: translateY(-1px);
+}
+
+.nav-links .active a {
+  color: var(--text-white);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+}
+
+.nav-links .active a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: var(--primary-200);
+  border-radius: var(--radius-full);
+}
+
+/* 用戶區域 */
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.btn-login {
+  padding: var(--space-2) var(--space-5);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-white);
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-base);
+  font-weight: 500;
+  font-size: var(--text-sm);
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(10px);
+}
+
+.btn-login:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 用戶下拉選單 */
+.user-dropdown {
+  position: relative;
+}
+
+.user-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-white);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-base);
+  font-weight: 500;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(10px);
+}
+
+.user-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.user-btn::after {
+  content: '▼';
+  font-size: 0.75rem;
+  opacity: 0.7;
+  transition: transform var(--transition-fast);
+}
+
+.user-btn[aria-expanded="true"]::after {
+  transform: rotate(180deg);
+}
+
+/* 下拉選單 */
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  min-width: 200px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  z-index: var(--z-dropdown);
+  list-style: none;
+  margin: 0;
+  padding: var(--space-2);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all var(--transition-base);
+}
+
+.user-dropdown:hover .dropdown-menu,
+.dropdown-menu:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-menu li {
+  margin: 0;
+}
+
+.dropdown-menu a,
+.dropdown-menu button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  color: var(--text-primary);
+  text-decoration: none;
+  border: none;
+  background: none;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  border-radius: var(--radius-base);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+  background: var(--primary-50);
+  color: var(--primary-700);
+  transform: translateX(4px);
+}
+
+.dropdown-menu .active a {
+  background: var(--primary-100);
+  color: var(--primary-800);
+}
+
+.logout-btn {
+  color: var(--error-600) !important;
+}
+
+.logout-btn:hover {
+  background: var(--error-50) !important;
+  color: var(--error-700) !important;
+}
+
+/* 響應式設計 */
 @media (max-width: 768px) {
-  .nav-links {
-    display: none; /* 預設隱藏 */
+  .navbar-container {
+    padding: 0 var(--space-4);
+    height: 3.5rem;
   }
 
-  .hamburger {
-    display: block; /* 小螢幕顯示漢堡按鈕 */
+  .logo {
+    font-size: var(--text-lg);
   }
+
+  .nav-links {
+    display: none; /* 在小螢幕上隱藏，可以後續添加漢堡選單 */
+  }
+
+  .user-btn {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-xs);
+  }
+
+  .dropdown-menu {
+    min-width: 180px;
+    right: var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-container {
+    padding: 0 var(--space-3);
+  }
+
+  .logo::before {
+    display: none;
+  }
+
+  .btn-login {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-xs);
+  }
+}
+
+/* 滾動時的效果 */
+.navbar.scrolled {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.95) 0%, rgba(29, 78, 216, 0.95) 100%);
+  backdrop-filter: blur(20px);
+}
+
+/* 載入動畫 */
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.navbar {
+  animation: slideDown 0.3s ease-out;
 }

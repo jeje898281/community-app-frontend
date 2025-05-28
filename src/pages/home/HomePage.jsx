@@ -1,16 +1,21 @@
+//src/components/HomePage.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import '../styles/HomePage.css';
-import logo from '../assets/join.svg';
+import '../../styles/HomePage.css';
+import logo from '../../assets/join.svg';
+import { useAuth } from '../../contexts/AuthContext';
 
 function HomePage() {
+  const { isLoggedIn } = useAuth();
   return (
     <div className="homepage">
       <header className="hero-section">
         <div className="hero-content">
           <h1>歡迎來到社區管理平台</h1>
           <p>簡化社區管理流程，提升效率與透明度。</p>
-          <Link to="/scan" className="btn-primary">開始掃描</Link>
+          <Link to={isLoggedIn ? "/meetings" : "/login"} className="btn-primary">
+            {isLoggedIn ? "前往會議管理" : "前往登入"}
+          </Link>
         </div>
         <div className="hero-image">
           <img src={logo} alt="社區管理平台" />

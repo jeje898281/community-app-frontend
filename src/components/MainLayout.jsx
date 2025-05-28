@@ -1,9 +1,9 @@
-// src/components/Layout.jsx
+//src/components/MainLayout.jsx
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import NavBar from './NavBar';
 
-function Layout() {
+function MainLayout() {
   return (
     <div>
       {/* 共用的導覽列 */}
@@ -15,4 +15,4 @@ function Layout() {
   );
 }
 
-export default Layout;
+export default MainLayout;

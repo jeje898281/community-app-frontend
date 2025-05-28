@@ -3,15 +3,49 @@ import axios from 'axios';
 
 // 創建 Axios 實例
 const apiClient = axios.create({
-  baseURL: 'https://api.example.com', // 替換為真實的 API 根路徑
+  baseURL: 'http://localhost:3000',
   timeout: 10000,
 });
+
+// 從 localStorage 讀取 JWT
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export function listResidents() {
+  return apiClient.get('/api/resident');
+}
 
 export function scanAttendance(unit) {
   return apiClient.post('/api/attendance/scan', { unit });
 }
 
-// 出席統計的 API 請求
-export const getAttendanceSummary = () => {
-  return apiClient.get('/attendance/summary'); // 替換為真實的 API 路徑
-};
+export function login({ username, password }) {
+  return apiClient.post('/api/auth/login', { username, password });
+}
+
+export function manualCheckIn({ meetingId, residentId }) {
+  return apiClient.post('/api/meeting/checkin', {
+    meetingId,
+    residentId,
+    isManual: true
+  });
+}
+export function getAttendanceSummary(meetingId) {
+  return apiClient.get(`/api/meeting/summary/${meetingId}`);
+}
+
+export function listMeetings() {
+  return apiClient.get('/api/meeting');
+}
+
+export function getMeetingById(meetingId) {
+  return apiClient.get(`/api/meeting/${meetingId}`);
+}
+
+
+
