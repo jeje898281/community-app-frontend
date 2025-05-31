@@ -1,59 +1,170 @@
-//src/pages/meetings/ScanPage.jsx
+// frontend/src/pages/meetings/ScanPage.jsx
 import React, { useState, useEffect } from 'react';
 import QrScanner from '../../components/QrScanner';
-import '../../styles/ScanPage.css';
+import { scanAttendance, listResidents } from '../../services/api';
+import { parseJWT, extractJWTFromQR } from '../../utils/jwtUtils';
 import { useMeeting } from '../../contexts/MeetingContext';
-import { useNavigate } from 'react-router-dom';
+import '../../styles/ScanPage.css';
 
 function ScanPage() {
-  const [lastScan, setLastScan] = useState('');
-  const [error, setError] = useState(null);
-  const [successCount, setSuccessCount] = useState(0);
+  const [scanResult, setScanResult] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [residents, setResidents] = useState([]);
+  const [scanCount, setScanCount] = useState(0);
   const { meeting } = useMeeting();
-  const navigate = useNavigate();
-  const meetingId = meeting?.id;
 
-  const handleScanSuccess = async (cleanText) => {
-    if (isProcessing) return; // 防止重複處理
+  // 載入住戶清單以便顯示戶號
+  useEffect(() => {
+    const fetchResidents = async () => {
+      try {
+        const response = await listResidents();
+        setResidents(response.data.data || []);
+      } catch (err) {
+        console.error('載入住戶清單失敗:', err);
+      }
+    };
+    fetchResidents();
+  }, []);
+
+  // 根據住戶ID獲取戶號
+  const getResidentCodeById = (residentId) => {
+    const resident = residents.find(r => r.id === residentId);
+    return resident ? resident.code : `住戶${residentId}`;
+  };
+
+  // 處理掃描成功
+  const handleScanSuccess = async (qrContent) => {
+    console.log('收到掃描內容:', qrContent);
 
     setIsProcessing(true);
-    console.log('掃描成功:', cleanText);
-    setLastScan(cleanText);
-    setError(null);
-    setSuccessCount(prev => prev + 1);
+    setScanResult(null);
 
-    // 模擬 API 處理時間
-    setTimeout(() => {
+    try {
+      const jwtToken = extractJWTFromQR(qrContent);
+      if (!jwtToken) {
+        setScanResult({
+          type: 'error',
+          message: '無效的QR碼',
+          details: '此QR碼不包含有效的簽到資訊',
+          residentCode: ''
+        });
+        return;
+      }
+
+      const payload = parseJWT(jwtToken);
+      if (!payload || !payload.residentId || !payload.meetingId) {
+        setScanResult({
+          type: 'error',
+          message: 'QR碼格式錯誤',
+          details: 'QR碼不包含必要的會議或住戶資訊',
+          residentCode: ''
+        });
+        return;
+      }
+
+      const residentCode = getResidentCodeById(payload.residentId);
+
+      if (payload.meetingId !== meeting?.id) {
+        setScanResult({
+          type: 'error',
+          message: '會議不匹配',
+          details: `此QR碼屬於其他會議，無法在當前會議中使用`,
+          residentCode: residentCode
+        });
+        return;
+      }
+
+      await scanAttendance(jwtToken);
+
+      setScanResult({
+        type: 'success',
+        message: '報到成功',
+        details: `${residentCode} 已成功完成報到`,
+        residentCode: residentCode
+      });
+
+      setScanCount(prev => prev + 1);
+
+    } catch (error) {
+      console.error('簽到失敗:', error);
+
+      const residentCode = (() => {
+        try {
+          const jwtToken = extractJWTFromQR(qrContent);
+          if (jwtToken) {
+            const payload = parseJWT(jwtToken);
+            if (payload?.residentId) {
+              return getResidentCodeById(payload.residentId);
+            }
+          }
+        } catch (e) {
+          // 忽略解析錯誤
+        }
+        return '';
+      })();
+
+      let errorMessage = '報到失敗';
+      let errorDetails = '系統發生錯誤，請稍後再試';
+
+      if (error.response?.data?.error) {
+        const apiError = error.response.data.error;
+        switch (apiError) {
+          case 'Already checked in':
+            errorMessage = '重複報到';
+            errorDetails = `${residentCode} 已經報到過，無需重複報到`;
+            break;
+          case 'Invalid token':
+            errorMessage = 'QR碼無效';
+            errorDetails = '此QR碼已過期或無效，請重新獲取';
+            break;
+          case 'Meeting not found':
+            errorMessage = '會議不存在';
+            errorDetails = '找不到對應的會議資訊';
+            break;
+          case 'Resident not found':
+            errorMessage = '住戶不存在';
+            errorDetails = `${residentCode} 不在住戶清單中`;
+            break;
+          default:
+            errorDetails = `系統錯誤: ${apiError}`;
+        }
+      } else if (error.code === 'NETWORK_ERROR') {
+        errorMessage = '網路錯誤';
+        errorDetails = '無法連接到伺服器，請檢查網路連線';
+      }
+
+      setScanResult({
+        type: 'error',
+        message: errorMessage,
+        details: errorDetails,
+        residentCode: residentCode
+      });
+    } finally {
       setIsProcessing(false);
-    }, 1500);
-
-    // 可以添加更多處理邏輯，比如驗證QR Code內容
-    if (cleanText && cleanText.length > 0) {
-      // 顯示成功提示
-      showSuccessAnimation();
     }
   };
 
+  // 處理掃描錯誤
   const handleScanError = (errorMessage) => {
-    console.error('掃描失敗:', errorMessage);
-    setError('無法辨識 QR Code，請確保光線充足並對準掃描區域');
-    setLastScan('');
-    setIsProcessing(false);
+    console.error('掃描錯誤:', errorMessage);
+    setScanResult({
+      type: 'error',
+      message: '掃描失敗',
+      details: errorMessage || '無法辨識QR碼，請確保光線充足並對準掃描區域',
+      residentCode: ''
+    });
   };
 
-  const showSuccessAnimation = () => {
-    // 添加成功動畫類
-    const container = document.querySelector('.scan-container');
-    container?.classList.add('scan-success');
-    setTimeout(() => {
-      container?.classList.remove('scan-success');
-    }, 2000);
+  // 清除結果，準備下次掃描
+  const clearResult = () => {
+    setScanResult(null);
   };
 
   return (
     <div className="scan-page">
-      <div className="scan-container">
+      {/* ======= 底下才是掃描 + 結果，已移除上方統計卡片 ======= */}
+      <div className="scan-content">
+        {/* 左側：掃描區塊 */}
         <div className="scanner-wrapper">
           <div className="scanner-frame">
             <div className="corner corner-tl"></div>
@@ -69,39 +180,36 @@ function ScanPage() {
             {isProcessing && (
               <div className="processing-overlay">
                 <div className="processing-spinner"></div>
-                <p>處理中...</p>
+                <p>處理報到中...</p>
               </div>
             )}
           </div>
         </div>
 
+        {/* 右側：掃描結果顯示區域 */}
         <div className="result-section">
-          {error ? (
-            <div className="result-card error-card">
-              <div className="result-icon">⚠️</div>
-              <h3>掃描失敗</h3>
-              <p className="error-message">{error}</p>
-              <button className="btn btn-secondary btn-sm" onClick={() => setError(null)}>
-                重新嘗試
-              </button>
-            </div>
-          ) : lastScan ? (
-            <div className="result-card success-card">
-              <div className="result-icon">✅</div>
-              <h3>掃描成功</h3>
-              <div className="scan-result">
-                <p className="result-label">掃描結果：</p>
-                <p className="result-value">{lastScan}</p>
+          {scanResult ? (
+            <div className={`result-card ${scanResult.type === 'success' ? 'success-card' : 'error-card'}`}>
+              <div className="result-icon">
+                {scanResult.type === 'success' ? '✅' : '❌'}
               </div>
+              <h3>{scanResult.message}</h3>
+
+              {scanResult.residentCode && (
+                <div className="resident-info">
+                  <span className="resident-label">住戶戶號:</span>
+                  <span className="resident-code">{scanResult.residentCode}</span>
+                </div>
+              )}
+
+              <p className="result-details">{scanResult.details}</p>
+
               <div className="result-actions">
-                <button className="btn btn-success btn-sm">
-                  確認簽到
-                </button>
                 <button
-                  className="btn btn-secondary btn-sm"
-                  onClick={() => setLastScan('')}
+                  className={`btn btn-sm ${scanResult.type === 'success' ? 'btn-success' : 'btn-secondary'}`}
+                  onClick={clearResult}
                 >
-                  重新掃描
+                  繼續掃描
                 </button>
               </div>
             </div>
@@ -109,7 +217,7 @@ function ScanPage() {
             <div className="result-card waiting-card">
               <div className="result-icon">🔍</div>
               <h3>等待掃描</h3>
-              <p>請對準 QR Code 進行掃描</p>
+              <p>請將QR碼對準掃描框進行簽到</p>
             </div>
           )}
         </div>

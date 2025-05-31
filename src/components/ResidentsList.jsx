@@ -110,7 +110,7 @@ function ResidentsList() {
       <div className="page-header">
         <div className="header-left">
           <h1 className="page-title">
-            <span className="title-icon">👥</span>
+            <span className="title-icon"></span>
             住戶清單
           </h1>
           <p className="page-subtitle">管理社區住戶資訊</p>

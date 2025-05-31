@@ -88,7 +88,7 @@ function Summary() {
             {/* 戶數統計 */}
             <div className="threshold-item">
               <div className="threshold-header">
-                <div className="threshold-icon">👥</div>
+                <div className="threshold-icon"></div>
                 <div className="threshold-info">
                   <h3>出席戶數</h3>
                   <div className="threshold-values">

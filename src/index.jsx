@@ -23,6 +23,7 @@ import ScanPage from './pages/meetings/ScanPage';
 import ManualCheckIn from './pages/meetings/ManualCheckIn';
 import SummaryPage from './pages/meetings/SummaryPage';
 import ResidentsList from './components/ResidentsList';
+import QRCodePage from './pages/meetings/QRCodePage';
 
 // Guards
 import RequireAuth from './components/RequireAuth';
@@ -59,6 +60,7 @@ root.render(
               <Route path="scan" element={<ScanPage />} />
               <Route path="manual" element={<ManualCheckIn />} />
               <Route path="summary" element={<SummaryPage />} />
+              <Route path="qrcodes" element={<QRCodePage />} />
             </Route>
           </Route>
 

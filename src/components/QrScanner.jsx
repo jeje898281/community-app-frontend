@@ -1,89 +1,176 @@
-//src/components/QrScanner.jsx
-import React, { useEffect, useCallback, useState } from 'react';
+// frontend/src/components/QrScanner.jsx
+import React, { useEffect, useCallback, useState, useRef } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
-import { scanAttendance } from '../services/api';
-import '../styles/QrScanner.css'; // 引入外部樣式
+import '../styles/QrScanner.css';
 
-function QrScanner({ onScanSuccess }) {
-  const [lastScanned, setLastScanned] = useState('');
-  const [scanCooldown, setScanCooldown] = useState(false);
+function QrScanner({ onScanSuccess, onError }) {
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [scannerReady, setScannerReady] = useState(false);
+  const scannerRef = useRef(null);
+  const lastScannedRef = useRef('');
+  const isProcessingRef = useRef(false);
 
   const handleScanSuccess = useCallback((codeText) => {
-    if (scanCooldown || codeText === lastScanned) {
-      return; // 3 秒內不允許重複掃描相同的 QR Code
+    // 檢查是否為重複掃描
+    if (codeText === lastScannedRef.current || isProcessingRef.current) {
+      return;
     }
 
-    console.log(`原始掃描的 QR code: ${codeText}`);
-    let extractedUrl = '';
-    let cleanText = codeText;
+    console.log('掃描到QR碼:', codeText);
+    lastScannedRef.current = codeText;
+    isProcessingRef.current = true;
 
-    // 解析 MEBKM 格式
-    if (codeText.startsWith("MEBKM:")) {
-      const urlMatch = codeText.match(/URL:(.*?);/);
-      if (urlMatch) {
-        extractedUrl = urlMatch[1]; // 取得 URL
-      }
-
-      const titleMatch = codeText.match(/TITLE:(.*?);/);
-      const title = titleMatch ? titleMatch[1] : '';
-      cleanText = extractedUrl || title || codeText;
-    }
-
-    console.log('解析後的 QR code:', cleanText);
-    setLastScanned(codeText);
-    setScanCooldown(true);
-
-    // 3 秒冷卻
-    setTimeout(() => setScanCooldown(false), 3000);
-
-    // 如果是 URL，自動打開
-    if (extractedUrl) {
-      window.open(extractedUrl, '_blank');
-    }
-
-    // 發送掃描結果到 API
-    scanAttendance(cleanText)
-      .then((res) => {
-        console.log('報到成功:', res.data);
-      })
-      .catch((error) => {
-        console.error('報到失敗:', error);
-      });
-
-    // 呼叫父組件的回調函數
+    // 直接將掃描結果傳給父組件處理
     if (onScanSuccess) {
-      onScanSuccess(cleanText);
+      onScanSuccess(codeText);
     }
-  }, [lastScanned, scanCooldown, onScanSuccess]);
+
+    // 設置冷卻時間，避免重複掃描
+    setTimeout(() => {
+      isProcessingRef.current = false;
+    }, 2000);
+  }, [onScanSuccess]);
+
+  const handleScanError = useCallback((error) => {
+    // 只記錄真正的錯誤，過濾掉常見的掃描過程錯誤
+    if (error &&
+      !error.includes('QR code parse error') &&
+      !error.includes('No QR code found') &&
+      !error.includes('Unable to detect a square') &&
+      !error.includes('Couldn\'t find enough corner candidates')) {
+      console.error('QR scanner error:', error);
+      if (onError) {
+        onError('掃描器發生錯誤: ' + error);
+      }
+    }
+  }, [onError]);
+
+  // 清理掃描器
+  const cleanupScanner = useCallback(() => {
+    if (scannerRef.current) {
+      try {
+        scannerRef.current.clear();
+        console.log('掃描器已清理');
+      } catch (error) {
+        console.log('清理掃描器錯誤:', error);
+      }
+      scannerRef.current = null;
+    }
+    setIsInitialized(false);
+    setScannerReady(false);
+  }, []);
 
   // 初始化掃描器
-  useEffect(() => {
-    const scanner = new Html5QrcodeScanner('qr-reader', {
-      fps: 10,
-      qrbox: 250,
-      aspectRatio: 1.0
-    });
+  const initializeScanner = useCallback(() => {
+    cleanupScanner();
 
-    scanner.render(handleScanSuccess, (error) => {
-      console.error('QR code parse error, error =', error);
-    });
+    const readerElement = document.getElementById('qr-reader');
+    if (!readerElement) {
+      console.error('找不到 qr-reader 元素');
+      return;
+    }
+
+    try {
+      console.log('開始初始化掃描器...');
+
+      const scanner = new Html5QrcodeScanner('qr-reader', {
+        fps: 10,
+        qrbox: { width: 250, height: 250 },
+        aspectRatio: 1.0,
+        showTorchButtonIfSupported: true,
+        showZoomSliderIfSupported: false,
+        rememberLastUsedCamera: true,
+        disableFlip: false,
+        supportedScanTypes: [],
+        experimentalFeatures: {
+          useBarCodeDetectorIfSupported: true
+        }
+      });
+
+      scannerRef.current = scanner;
+
+      scanner.render(
+        (decodedText) => {
+          setScannerReady(true);
+          handleScanSuccess(decodedText);
+        },
+        (error) => {
+          handleScanError(error);
+        }
+      );
+
+      setIsInitialized(true);
+      console.log('掃描器初始化完成');
+
+    } catch (error) {
+      console.error('初始化掃描器失敗:', error);
+      if (onError) {
+        onError('初始化掃描器失敗: ' + error.message);
+      }
+    }
+  }, [cleanupScanner, handleScanSuccess, handleScanError, onError]);
+
+  // 組件掛載時初始化
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      initializeScanner();
+    }, 500);
 
     return () => {
-      scanner.clear();
+      clearTimeout(timer);
+      cleanupScanner();
     };
-  }, [handleScanSuccess]);
+  }, [initializeScanner, cleanupScanner]);
+
+  // 重新啟動掃描器
+  const restartScanner = useCallback(() => {
+    console.log('重新啟動掃描器...');
+    lastScannedRef.current = '';
+    isProcessingRef.current = false;
+
+    setTimeout(() => {
+      initializeScanner();
+    }, 200);
+  }, [initializeScanner]);
 
   return (
     <div className="qr-scanner-container">
       {/* 掃描框 */}
       <div id="qr-reader" className="qr-reader" />
 
-      {/* 顯示上一次掃描的結果 */}
-      {lastScanned && (
-        <p className="scan-result">
-          上次掃描結果：<strong>{lastScanned}</strong>
-        </p>
-      )}
+      {/* 控制按鈕 */}
+      <div className="scanner-controls">
+        <button
+          className="btn btn-secondary btn-sm"
+          onClick={restartScanner}
+          style={{ marginTop: '10px' }}
+        >
+          重新啟動掃描器
+        </button>
+
+        {!scannerReady && isInitialized && (
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={initializeScanner}
+            style={{ marginTop: '10px', marginLeft: '10px' }}
+          >
+            啟動相機
+          </button>
+        )}
+      </div>
+
+      {/* 掃描狀態提示 */}
+      <div className="scanner-status">
+        {!isInitialized && (
+          <p className="status-text">正在初始化掃描器...</p>
+        )}
+        {isInitialized && !scannerReady && (
+          <p className="status-text">等待相機啟動...</p>
+        )}
+        {scannerReady && (
+          <p className="status-text success">掃描器已就緒，請對準QR碼</p>
+        )}
+      </div>
     </div>
   );
 }

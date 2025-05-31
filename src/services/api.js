@@ -20,8 +20,8 @@ export function listResidents() {
   return apiClient.get('/api/resident');
 }
 
-export function scanAttendance(unit) {
-  return apiClient.post('/api/attendance/scan', { unit });
+export function scanAttendance(qrCode) {
+  return apiClient.post('/api/meeting/checkin', { qrCode });
 }
 
 export function login({ username, password }) {
@@ -45,6 +45,11 @@ export function listMeetings() {
 
 export function getMeetingById(meetingId) {
   return apiClient.get(`/api/meeting/${meetingId}`);
+}
+
+// 生成住戶QR碼
+export function generateQRCodes(meetingId) {
+  return apiClient.post('/api/meeting/generate-qr-codes', { meetingId });
 }
 
 
