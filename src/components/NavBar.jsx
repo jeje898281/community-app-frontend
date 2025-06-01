@@ -44,7 +44,7 @@ export default function NavBar() {
           {isLoggedIn && (
             <>
               <li className={location.pathname.startsWith('/meetings') ? 'active' : ''}>
-                <Link to="/meetings">會議管理</Link>
+                <Link to="/meetings">進入會議</Link>
               </li>
 
               {(role === 'admin' || role === 'manager') && (

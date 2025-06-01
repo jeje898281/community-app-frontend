@@ -79,7 +79,7 @@ function CreateResidentModal({ isOpen, onClose, onSuccess }) {
         try {
             const submitData = {
                 code: formData.code.trim(),
-                residentSqm: parseFloat(formData.residentSqm),
+                residentSqm: parseFloat(Number(formData.residentSqm).toFixed(2)),
                 email: formData.email.trim() || undefined
             };
 
@@ -172,17 +172,29 @@ function CreateResidentModal({ isOpen, onClose, onSuccess }) {
                                 坪數 <span className="required">*</span>
                             </label>
                             <input
-                                type="text"
+                                type="number"
                                 id="residentSqm"
                                 name="residentSqm"
                                 value={formData.residentSqm}
-                                onChange={handleInputChange}
-                                className="form-input"
-                                placeholder="請輸入坪數（例如：22.35）"
+                                onChange={(e) => {
+                                    let value = e.target.value;
+                                    // 限制小數點後最多兩位
+                                    if (value.includes('.')) {
+                                        const parts = value.split('.');
+                                        if (parts[1] && parts[1].length > 2) {
+                                            value = parts[0] + '.' + parts[1].substring(0, 2);
+                                        }
+                                    }
+                                    setFormData({ ...formData, residentSqm: value });
+                                }}
+                                className={`form-input ${error ? 'error' : ''}`}
+                                placeholder="例如：30.25"
                                 disabled={loading}
                                 required
+                                min="0"
+                                step="0.01"
                             />
-                            <div className="form-hint">支援小數點後兩位，例如：22.35</div>
+                            {error && <span className="error-message">{error}</span>}
                         </div>
 
                         <div className="form-group">
@@ -194,15 +206,19 @@ function CreateResidentModal({ isOpen, onClose, onSuccess }) {
                                 id="email"
                                 name="email"
                                 value={formData.email}
-                                onChange={handleInputChange}
+                                onChange={(e) => {
+                                    // 保持原始大小寫，不做任何轉換
+                                    setFormData({ ...formData, email: e.target.value });
+                                    if (error) setError('');
+                                }}
                                 className="form-input form-input-email"
-                                placeholder="請輸入電子信箱（選填）"
+                                placeholder="例如：Resident@Example.com"
                                 disabled={loading}
                                 autoCapitalize="none"
                                 autoComplete="email"
                                 style={{ textTransform: 'none' }}
                             />
-                            <div className="form-hint">只能輸入英文字母、數字和信箱符號</div>
+                            <div className="form-hint">信箱將保持您輸入的大小寫格式</div>
                         </div>
 
                         {error && (

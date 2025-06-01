@@ -250,6 +250,52 @@
   width: 160px;
 }
 
+.col-actions {
+  width: 100px;
+  text-align: center;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-action {
+  background: none;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 6px 8px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-edit {
+  color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.btn-edit:hover {
+  background-color: #eff6ff;
+  color: #2563eb;
+  border-color: #2563eb;
+}
+
+.btn-delete {
+  color: #dc2626;
+  border-color: #dc2626;
+}
+
+.btn-delete:hover {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border-color: #b91c1c;
+}
+
 .sortable {
   cursor: pointer;
   user-select: none;

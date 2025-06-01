@@ -62,5 +62,20 @@ export function bulkImportResidents(data) {
   return apiClient.post('/api/resident/bulk', data);
 }
 
+// 編輯住戶
+export function updateResident(id, data) {
+  return apiClient.patch('/api/resident', { id, ...data });
+}
+
+// 刪除住戶
+export function deleteResident(id) {
+  return apiClient.delete('/api/resident', { data: { id } });
+}
+
+// 更新會議
+export function updateMeeting(data) {
+  return apiClient.patch('/api/meeting', data);
+}
+
 
 

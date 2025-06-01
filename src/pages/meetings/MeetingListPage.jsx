@@ -2,24 +2,58 @@
 import React, { useEffect, useState } from 'react';
 import { listMeetings } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
+import EditMeetingModal from '../../components/EditMeetingModal';
+import Toast from '../../components/Toast';
 import '../../styles/MeetingList.css';
 
 export default function MeetingListPage() {
   const [meetings, setMeetings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('all');
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedMeeting, setSelectedMeeting] = useState(null);
+  const [toast, setToast] = useState({ isVisible: false, message: '', type: 'success' });
   const navigate = useNavigate();
 
   useEffect(() => {
-    listMeetings()
-      .then(res => setMeetings(res.data.data))
-      .finally(() => setLoading(false));
+    fetchMeetings();
   }, []);
+
+  const fetchMeetings = async () => {
+    try {
+      setLoading(true);
+      const res = await listMeetings();
+      setMeetings(res.data.data);
+    } catch (error) {
+      console.error('Failed to fetch meetings:', error);
+      showToast('載入會議資料失敗', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const showToast = (message, type = 'success') => {
+    setToast({ isVisible: true, message, type });
+  };
+
+  const hideToast = () => {
+    setToast(prev => ({ ...prev, isVisible: false }));
+  };
+
+  const handleEditMeeting = (meeting) => {
+    setSelectedMeeting(meeting);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSuccess = () => {
+    fetchMeetings(); // 重新載入會議列表
+    showToast('會議資料更新成功！', 'success');
+  };
 
   const getStatusBadge = (status) => {
     const statusConfig = {
       'pending': { text: '待開始', class: 'badge-warning' },
-      'active': { text: '進行中', class: 'badge-success' },
+      'ongoing': { text: '進行中', class: 'badge-success' },
       'completed': { text: '已結束', class: 'badge-primary' },
       'cancelled': { text: '已取消', class: 'badge-error' }
     };
@@ -44,7 +78,7 @@ export default function MeetingListPage() {
 
   const filterMeetings = (meetings) => {
     if (activeFilter === 'all') return meetings;
-    if (activeFilter === 'active') return meetings.filter(m => m.status === 'active');
+    if (activeFilter === 'ongoing') return meetings.filter(m => m.status === 'ongoing');
     if (activeFilter === 'pending') return meetings.filter(m => m.status === 'pending');
     if (activeFilter === 'completed') return meetings.filter(m => m.status === 'completed');
     return meetings;
@@ -84,10 +118,10 @@ export default function MeetingListPage() {
           全部 ({meetings.length})
         </button>
         <button
-          className={`filter-tab ${activeFilter === 'active' ? 'active' : ''}`}
-          onClick={() => setActiveFilter('active')}
+          className={`filter-tab ${activeFilter === 'ongoing' ? 'active' : ''}`}
+          onClick={() => setActiveFilter('ongoing')}
         >
-          進行中 ({meetings.filter(m => m.status === 'active').length})
+          進行中 ({meetings.filter(m => m.status === 'ongoing').length})
         </button>
         <button
           className={`filter-tab ${activeFilter === 'pending' ? 'active' : ''}`}
@@ -110,10 +144,10 @@ export default function MeetingListPage() {
           <p>
             {activeFilter === 'all'
               ? '尚未安排任何會議，請聯繫管理員'
-              : `目前沒有${activeFilter === 'active' ? '進行中' : activeFilter === 'pending' ? '待開始' : '已結束'}的會議`
+              : `目前沒有${activeFilter === 'ongoing' ? '進行中' : activeFilter === 'pending' ? '待開始' : '已結束'}的會議`
             }
           </p>
-          <button className="btn btn-secondary">
+          <button className="btn btn-secondary" onClick={fetchMeetings}>
             重新整理
           </button>
         </div>
@@ -141,28 +175,59 @@ export default function MeetingListPage() {
                       })}
                     </span>
                   </div>
-                  {meeting.location && (
-                    <div className="info-item">
-                      <span className="info-icon">📍</span>
-                      <span className="info-text">{meeting.location}</span>
-                    </div>
-                  )}
+                  <div className="info-item">
+                    <span className="info-icon">🏠</span>
+                    <span className="info-text">坪數門檻: {meeting.sqmThreshold}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-icon">👥</span>
+                    <span className="info-text">戶數門檻: {meeting.residentThreshold}</span>
+                  </div>
                 </div>
               </div>
 
               <div className="meeting-card-footer">
-                <button
-                  className="btn btn-primary btn-sm"
-                  onClick={() => navigate(`/meetings/${meeting.id}/scan`)}
-                  disabled={meeting.status === 'completed' || meeting.status === 'cancelled'}
-                >
-                  {meeting.status === 'active' ? '進入會議' : '會議管理'}
-                </button>
+                <div className="button-group">
+                  <button
+                    className="btn btn-outline btn-sm"
+                    onClick={() => handleEditMeeting(meeting)}
+                    title="編輯會議"
+                  >
+                    ✏️ 編輯
+                  </button>
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={() => navigate(`/meetings/${meeting.id}/scan`)}
+                    disabled={meeting.status === 'completed' || meeting.status === 'cancelled'}
+                  >
+                    {meeting.status === 'ongoing' ? '進入會議' : '進入會議'}
+                  </button>
+                </div>
               </div>
             </div>
           ))}
         </div>
       )}
+
+      {/* 編輯會議彈窗 */}
+      <EditMeetingModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedMeeting(null);
+        }}
+        onSuccess={handleEditSuccess}
+        meeting={selectedMeeting}
+      />
+
+      {/* Toast 提示 */}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={hideToast}
+        duration={3000}
+      />
     </div>
   );
 }

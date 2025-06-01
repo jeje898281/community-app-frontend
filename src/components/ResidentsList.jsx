@@ -4,6 +4,8 @@ import { listResidents } from '../services/api';
 import CreateResidentModal from './CreateResidentModal';
 import BulkImportModal from './BulkImportModal';
 import Toast from './Toast';
+import EditResidentModal from './EditResidentModal';
+import DeleteConfirmModal from './DeleteConfirmModal';
 import '../styles/ResidentsList.css';
 
 function ResidentsList() {
@@ -18,6 +20,9 @@ function ResidentsList() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isBulkImportModalOpen, setIsBulkImportModalOpen] = useState(false);
   const [toast, setToast] = useState({ isVisible: false, message: '', type: 'success' });
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedResident, setSelectedResident] = useState(null);
 
   useEffect(() => {
     const fetchResidents = async () => {
@@ -114,6 +119,26 @@ function ResidentsList() {
   const handleBulkImportSuccess = () => {
     refreshResidents();
     showToast('批量匯入完成！', 'success');
+  };
+
+  const handleEditResident = (resident) => {
+    setSelectedResident(resident);
+    setIsEditModalOpen(true);
+  };
+
+  const handleDeleteResident = (resident) => {
+    setSelectedResident(resident);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleEditSuccess = () => {
+    refreshResidents();
+    showToast('住戶資料更新成功！', 'success');
+  };
+
+  const handleDeleteSuccess = () => {
+    refreshResidents();
+    showToast('住戶刪除成功！', 'success');
   };
 
   if (loading) {
@@ -234,12 +259,13 @@ function ResidentsList() {
               >
                 社區 <span className="sort-icon">{getSortIcon('community')}</span>
               </th>
+              <th className="col-actions">操作</th>
             </tr>
           </thead>
           <tbody>
             {currentResidents.length === 0 ? (
               <tr>
-                <td colSpan="4" className="no-data-row">
+                <td colSpan="5" className="no-data-row">
                   <div className="no-data">
                     <span className="no-data-icon">📭</span>
                     <span>找不到符合條件的住戶</span>
@@ -269,6 +295,24 @@ function ResidentsList() {
                     <span className="community-badge">
                       {resident.community?.name || '-'}
                     </span>
+                  </td>
+                  <td className="col-actions">
+                    <div className="action-buttons">
+                      <button
+                        className="btn-action btn-edit"
+                        onClick={() => handleEditResident(resident)}
+                        title="編輯住戶"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        className="btn-action btn-delete"
+                        onClick={() => handleDeleteResident(resident)}
+                        title="刪除住戶"
+                      >
+                        🗑️
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -334,6 +378,28 @@ function ResidentsList() {
         isOpen={isBulkImportModalOpen}
         onClose={() => setIsBulkImportModalOpen(false)}
         onSuccess={handleBulkImportSuccess}
+      />
+
+      {/* 編輯住戶彈窗 */}
+      <EditResidentModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedResident(null);
+        }}
+        onSuccess={handleEditSuccess}
+        resident={selectedResident}
+      />
+
+      {/* 刪除確認彈窗 */}
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setSelectedResident(null);
+        }}
+        onSuccess={handleDeleteSuccess}
+        resident={selectedResident}
       />
 
       {/* Toast 提示 */}
