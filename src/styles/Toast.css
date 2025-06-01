@@ -1,0 +1,75 @@
+.toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2xl);
+  backdrop-filter: blur(8px);
+  animation: toastSlideIn 0.3s ease-out;
+  min-width: 300px;
+  max-width: 500px;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.toast-success {
+  background: rgba(34, 197, 94, 0.95);
+  border: 1px solid rgb(34, 197, 94);
+  color: white;
+}
+
+.toast-error {
+  background: rgba(239, 68, 68, 0.95);
+  border: 1px solid rgb(239, 68, 68);
+  color: white;
+}
+
+.toast-warning {
+  background: rgba(245, 158, 11, 0.95);
+  border: 1px solid rgb(245, 158, 11);
+  color: white;
+}
+
+.toast-info {
+  background: rgba(59, 130, 246, 0.95);
+  border: 1px solid rgb(59, 130, 246);
+  color: white;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.toast-icon {
+  font-size: var(--text-lg);
+  flex-shrink: 0;
+}
+
+.toast-message {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  flex: 1;
+}
+
+/* 響應式設計 */
+@media (max-width: 480px) {
+  .toast {
+    min-width: 280px;
+    max-width: calc(100vw - var(--space-8));
+    margin: 0 var(--space-4);
+  }
+} 

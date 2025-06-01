@@ -52,5 +52,15 @@ export function generateQRCodes(meetingId) {
   return apiClient.post('/api/meeting/generate-qr-codes', { meetingId });
 }
 
+// 新增住戶
+export function createResident(data) {
+  return apiClient.post('/api/resident', data);
+}
+
+// 批量匯入住戶
+export function bulkImportResidents(data) {
+  return apiClient.post('/api/resident/bulk', data);
+}
+
 
 

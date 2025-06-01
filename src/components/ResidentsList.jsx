@@ -1,6 +1,9 @@
 //src/components/ResidentsList.jsx
 import React, { useEffect, useState, useMemo } from 'react';
 import { listResidents } from '../services/api';
+import CreateResidentModal from './CreateResidentModal';
+import BulkImportModal from './BulkImportModal';
+import Toast from './Toast';
 import '../styles/ResidentsList.css';
 
 function ResidentsList() {
@@ -12,6 +15,9 @@ function ResidentsList() {
   const [sortDirection, setSortDirection] = useState('asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isBulkImportModalOpen, setIsBulkImportModalOpen] = useState(false);
+  const [toast, setToast] = useState({ isVisible: false, message: '', type: 'success' });
 
   useEffect(() => {
     const fetchResidents = async () => {
@@ -78,6 +84,38 @@ function ResidentsList() {
     setCurrentPage(page);
   };
 
+  const refreshResidents = async () => {
+    try {
+      setLoading(true);
+      const response = await listResidents();
+      setResidents(response.data.data || []);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to fetch residents:', err);
+      setError('無法載入住戶資料');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const showToast = (message, type = 'success') => {
+    setToast({ isVisible: true, message, type });
+  };
+
+  const hideToast = () => {
+    setToast(prev => ({ ...prev, isVisible: false }));
+  };
+
+  const handleCreateSuccess = () => {
+    refreshResidents();
+    showToast('住戶創建成功！', 'success');
+  };
+
+  const handleBulkImportSuccess = () => {
+    refreshResidents();
+    showToast('批量匯入完成！', 'success');
+  };
+
   if (loading) {
     return (
       <div className="residents-page">
@@ -110,14 +148,24 @@ function ResidentsList() {
       <div className="page-header">
         <div className="header-left">
           <h1 className="page-title">
-            <span className="title-icon"></span>
+            <span className="title-icon">🏠</span>
             住戶清單
           </h1>
           <p className="page-subtitle">管理社區住戶資訊</p>
         </div>
         <div className="header-actions">
-          <button className="btn btn-primary">新增住戶</button>
-          <button className="btn btn-secondary">匯入資料</button>
+          <button
+            className="btn btn-primary"
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+            ➕ 新增住戶
+          </button>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setIsBulkImportModalOpen(true)}
+          >
+            📄 批量匯入
+          </button>
         </div>
       </div>
 
@@ -273,6 +321,29 @@ function ResidentsList() {
           </div>
         </div>
       )}
+
+      {/* 新增住戶彈窗 */}
+      <CreateResidentModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={handleCreateSuccess}
+      />
+
+      {/* 批量匯入Modal */}
+      <BulkImportModal
+        isOpen={isBulkImportModalOpen}
+        onClose={() => setIsBulkImportModalOpen(false)}
+        onSuccess={handleBulkImportSuccess}
+      />
+
+      {/* Toast 提示 */}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={hideToast}
+        duration={3000}
+      />
     </div>
   );
 }
