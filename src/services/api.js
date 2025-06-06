@@ -77,5 +77,27 @@ export function updateMeeting(data) {
   return apiClient.patch('/api/meeting', data);
 }
 
+// === 個人資料相關API ===
+// 獲取個人資料
+export function getProfile() {
+  return apiClient.get('/api/profile');
+}
+
+// 更新個人資料
+export function updateProfile(data) {
+  return apiClient.put('/api/profile', data);
+}
+
+// === 社區資訊相關API ===
+// 獲取社區資訊
+export function getCommunityInfo() {
+  return apiClient.get('/api/community');
+}
+
+// 更新社區資訊
+export function updateCommunityInfo(data) {
+  return apiClient.put('/api/community', data);
+}
+
 
 

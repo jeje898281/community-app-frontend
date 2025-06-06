@@ -10,6 +10,31 @@
   padding: var(--space-6);
 }
 
+/* 載入狀態 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 /* 頁面標題 */
 .profile-header {
   margin-bottom: var(--space-8);
@@ -136,6 +161,21 @@
   font-size: var(--text-sm);
   padding: var(--space-2) var(--space-3);
   max-width: 300px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.form-input:disabled {
+  background: #f8f9fa;
+  color: #666;
+  cursor: not-allowed;
 }
 
 /* 編輯模式 */
@@ -193,6 +233,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-3);
+  margin-bottom: var(--space-3);
 }
 
 .action-button {
@@ -212,11 +253,17 @@
   font-size: var(--text-sm);
 }
 
-.action-button:hover {
+.action-button:hover:not(:disabled) {
   background: var(--primary-50);
   border-color: var(--primary-200);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+}
+
+.action-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .action-text {
@@ -228,8 +275,93 @@
   transition: transform var(--transition-fast);
 }
 
-.action-button:hover .action-arrow {
+.action-button:hover:not(:disabled) .action-arrow {
   transform: translateX(4px);
+}
+
+.action-note {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 0;
+  font-style: italic;
+}
+
+/* 按鈕樣式 */
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #007bff;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #545b62;
+}
+
+.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+/* Badge樣式 */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-primary {
+  background: #007bff;
+  color: white;
+}
+
+.badge-error {
+  background: #dc3545;
+  color: white;
+}
+
+.badge-warning {
+  background: #ffc107;
+  color: #212529;
+}
+
+.badge-info {
+  background: #17a2b8;
+  color: white;
+}
+
+.badge-success {
+  background: #28a745;
+  color: white;
 }
 
 /* 響應式設計 */
@@ -268,7 +400,7 @@
   }
 
   .action-button {
-    padding: var(--space-3);
+    justify-content: center;
   }
 }
 
@@ -278,19 +410,18 @@
   }
 
   .community-description {
-    padding: var(--space-3);
+    padding: var(--space-2);
   }
 
   .action-button {
-    gap: var(--space-2);
+    padding: var(--space-2);
   }
 
   .action-text {
-    font-size: var(--text-sm);
+    font-size: var(--text-xs);
   }
 }
 
-/* 載入動畫 */
 @keyframes slideInUp {
   from {
     opacity: 0;
@@ -314,8 +445,51 @@
   animation-delay: 0.3s;
 }
 
-/* 編輯狀態特殊樣式 */
 .profile-card:has(.form-input:focus) {
-  border-color: var(--primary-300);
-  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-6px);
+}
+
+/* CSS變數定義（如果專案中沒有的話） */
+:root {
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-light: #e9ecef;
+  
+  --primary-50: #e3f2fd;
+  --primary-200: #90caf9;
+  --primary-500: #2196f3;
+  --primary-600: #1976d2;
+  --primary-700: #1565c0;
+  --primary-800: #0d47a1;
+  
+  --radius-base: 0.375rem;
+  --radius-xl: 0.75rem;
+  
+  --shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  --transition-base: 0.15s ease-in-out;
+  --transition-fast: 0.1s ease-in-out;
+  --leading-relaxed: 1.625;
 } 
