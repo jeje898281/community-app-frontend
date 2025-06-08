@@ -38,7 +38,7 @@ export default function CommunityPage() {
     try {
       setLoading(true);
       const response = await getCommunityInfo();
-      if (response.data.success) {
+      if (response.status >= 200 && response.status < 300) {
         const communityData = response.data.data;
         setCommunity(communityData);
         setFormData({
@@ -97,7 +97,7 @@ export default function CommunityPage() {
 
       const response = await updateCommunityInfo(updateData);
 
-      if (response.data.success) {
+      if (response.status >= 200 && response.status < 300) {
         const updatedCommunity = response.data.data;
         setCommunity(updatedCommunity);
         setIsEditing(false);

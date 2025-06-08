@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getProfile, updateProfile } from '../../services/api';
 import Toast from '../../components/Toast';
+import ChangePasswordModal from '../../components/ChangePasswordModal';
+import { getErrorMessage } from '../../constants/errorCodes';
 import '../../styles/ProfilePage.css';
 
 export default function ProfilePage() {
@@ -20,6 +22,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   // 載入個人資料
   useEffect(() => {
@@ -30,16 +33,19 @@ export default function ProfilePage() {
     try {
       setLoading(true);
       const response = await getProfile();
-      if (response.data.success) {
-        const profileData = response.data.data;
-        setProfile(profileData);
-        setEditDisplayName(profileData.displayName);
+      if (response.status >= 200 && response.status < 300) {
+        setProfile(response.data.data);
+        setEditDisplayName(response.data.data.displayName);
       } else {
         showToast('載入個人資料失敗', 'error');
       }
     } catch (error) {
       console.error('載入個人資料失敗:', error);
-      showToast(error.response?.data?.message || '載入個人資料失敗', 'error');
+
+      const errorCode = error.response?.data?.errorCode;
+      const errorMessage = getErrorMessage(errorCode) || error.response?.data?.message || '載入個人資料失敗';
+
+      showToast(errorMessage, 'error');
     } finally {
       setLoading(false);
     }
@@ -68,21 +74,30 @@ export default function ProfilePage() {
   };
 
   const handleSaveProfile = async () => {
-    if (!editDisplayName.trim()) {
-      showToast('顯示名稱不能為空', 'error');
+    // 前端驗證
+    const trimmedDisplayName = editDisplayName.trim();
+
+    if (!trimmedDisplayName) {
+      showToast(getErrorMessage('DISPLAY_NAME_REQUIRED') || '顯示名稱不能為空', 'error');
       return;
     }
 
-    if (editDisplayName.trim().length > 50) {
-      showToast('顯示名稱長度不能超過50個字元', 'error');
+    if (trimmedDisplayName.length > 50) {
+      showToast(getErrorMessage('DISPLAY_NAME_TOO_LONG') || '顯示名稱長度不能超過50個字元', 'error');
+      return;
+    }
+
+    // 如果沒有變更，不需要送請求
+    if (trimmedDisplayName === (profile.displayName || displayName)) {
+      showToast('沒有變更需要儲存', 'info');
+      setIsEditing(false);
       return;
     }
 
     try {
       setUpdating(true);
       const response = await updateProfile({ displayName: editDisplayName.trim() });
-
-      if (response.data.success) {
+      if (response.status >= 200 && response.status < 300) {
         const updatedProfile = response.data.data;
         setProfile(updatedProfile);
         setIsEditing(false);
@@ -105,7 +120,25 @@ export default function ProfilePage() {
       }
     } catch (error) {
       console.error('更新個人資料失敗:', error);
-      showToast(error.response?.data?.message || '更新失敗，請稍後再試', 'error');
+
+      // 使用錯誤代碼常數來獲取錯誤訊息
+      const errorCode = error.response?.data?.errorCode;
+      const errorMessage = getErrorMessage(errorCode) || error.response?.data?.message || '更新失敗，請稍後再試';
+
+      showToast(errorMessage, 'error');
+
+      // 如果是用戶不存在的錯誤，可以考慮跳轉到登入頁面
+      if (errorCode === 'USER_NOT_FOUND') {
+        // 清除本地儲存的認證資訊
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        localStorage.removeItem('displayName');
+        localStorage.removeItem('communityName');
+        localStorage.removeItem('communityDescription');
+        localStorage.removeItem('role');
+        // 可以在這裡重新導向到登入頁面
+        // 例如: window.location.href = '/login';
+      }
     } finally {
       setUpdating(false);
     }
@@ -122,6 +155,17 @@ export default function ProfilePage() {
 
   const hideToast = () => {
     setToast({ show: false, message: '', type: '' });
+  };
+
+  // 處理修改密碼成功的回調
+  const handlePasswordChangeSuccess = (message) => {
+    setShowPasswordModal(false);
+    showToast(message || '密碼修改成功！', 'success');
+  };
+
+  // 處理修改密碼錯誤的回調
+  const handlePasswordChangeError = (errorMessage) => {
+    showToast(errorMessage, 'error');
   };
 
   const formatDateTime = (dateString) => {
@@ -147,9 +191,7 @@ export default function ProfilePage() {
       <div className="profile-container">
         <div className="profile-header">
           <div className="header-content">
-            <h1 className="page-title">
-              個人資料
-            </h1>
+            <h1 className="page-title">個人資料</h1>
             <p className="page-subtitle">管理您的帳戶資訊</p>
           </div>
         </div>
@@ -158,9 +200,7 @@ export default function ProfilePage() {
           {/* 個人資訊卡片 */}
           <div className="profile-card">
             <div className="card-header">
-              <h2 className="card-title">
-                基本資訊
-              </h2>
+              <h2 className="card-title">基本資訊</h2>
               <button
                 className="btn btn-sm btn-secondary"
                 onClick={() => setIsEditing(!isEditing)}
@@ -173,18 +213,14 @@ export default function ProfilePage() {
             <div className="card-body">
               <div className="profile-grid">
                 <div className="profile-item">
-                  <label className="profile-label">
-                    用戶ID
-                  </label>
+                  <label className="profile-label">用戶ID</label>
                   <div className="profile-value">
                     <span className="value-text">{profile.id || '-'}</span>
                   </div>
                 </div>
 
                 <div className="profile-item">
-                  <label className="profile-label">
-                    帳號
-                  </label>
+                  <label className="profile-label">帳號</label>
                   <div className="profile-value">
                     <span className="value-text">{profile.username || username || '-'}</span>
                     <span className="value-badge badge badge-primary">不可修改</span>
@@ -192,9 +228,7 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="profile-item">
-                  <label className="profile-label">
-                    顯示名稱
-                  </label>
+                  <label className="profile-label">顯示名稱</label>
                   <div className="profile-value">
                     {isEditing ? (
                       <input
@@ -213,9 +247,7 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="profile-item">
-                  <label className="profile-label">
-                    用戶角色
-                  </label>
+                  <label className="profile-label">用戶角色</label>
                   <div className="profile-value">
                     <span className={`badge ${getRoleBadgeClass(profile.role || role)}`}>
                       {getRoleDisplayName(profile.role || role)}
@@ -224,18 +256,14 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="profile-item">
-                  <label className="profile-label">
-                    註冊時間
-                  </label>
+                  <label className="profile-label">註冊時間</label>
                   <div className="profile-value">
                     <span className="value-text">{formatDateTime(profile.createdAt)}</span>
                   </div>
                 </div>
 
                 <div className="profile-item">
-                  <label className="profile-label">
-                    最後更新
-                  </label>
+                  <label className="profile-label">最後更新</label>
                   <div className="profile-value">
                     <span className="value-text">{formatDateTime(profile.updatedAt)}</span>
                   </div>
@@ -267,9 +295,7 @@ export default function ProfilePage() {
           {(communityName || communityDescription) && (
             <div className="community-card">
               <div className="card-header">
-                <h2 className="card-title">
-                  社區資訊
-                </h2>
+                <h2 className="card-title">社區資訊</h2>
               </div>
               <div className="card-body">
                 <div className="community-info">
@@ -291,13 +317,14 @@ export default function ProfilePage() {
           {/* 快速操作卡片 */}
           <div className="actions-card">
             <div className="card-header">
-              <h2 className="card-title">
-                快速操作
-              </h2>
+              <h2 className="card-title">快速操作</h2>
             </div>
             <div className="card-body">
               <div className="quick-actions">
-                <button className="action-button" disabled>
+                <button
+                  className="action-button"
+                  onClick={() => setShowPasswordModal(true)}
+                >
                   <span className="action-text">修改密碼</span>
                   <span className="action-arrow">→</span>
                 </button>
@@ -306,18 +333,29 @@ export default function ProfilePage() {
                   <span className="action-arrow">→</span>
                 </button>
               </div>
-              <p className="action-note">這些功能即將開放</p>
+              <p className="action-note">部分功能即將開放</p>
             </div>
           </div>
         </div>
       </div>
 
+      {/* 修改密碼模態框 */}
+      {showPasswordModal && (
+        <ChangePasswordModal
+          isOpen={showPasswordModal}
+          onClose={() => setShowPasswordModal(false)}
+          onSuccess={handlePasswordChangeSuccess}
+          onError={handlePasswordChangeError}
+        />
+      )}
+
+      {/* Toast 訊息 */}
       {toast.show && (
         <Toast
           message={toast.message}
           type={toast.type}
           onClose={hideToast}
-          duration={3000}
+          duration={toast.type === 'success' ? 1250 : 2000}
         />
       )}
     </div>

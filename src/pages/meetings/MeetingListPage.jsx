@@ -4,6 +4,7 @@ import { listMeetings } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import EditMeetingModal from '../../components/EditMeetingModal';
 import Toast from '../../components/Toast';
+import CreateMeetingModal from '../../components/CreateMeetingModal';
 import '../../styles/MeetingList.css';
 
 export default function MeetingListPage() {
@@ -11,6 +12,7 @@ export default function MeetingListPage() {
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('all');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState(null);
   const [toast, setToast] = useState({ isVisible: false, message: '', type: 'success' });
   const navigate = useNavigate();
@@ -48,6 +50,15 @@ export default function MeetingListPage() {
   const handleEditSuccess = () => {
     fetchMeetings(); // 重新載入會議列表
     showToast('會議資料更新成功！', 'success');
+  };
+
+  const handleCreateMeeting = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCreateSuccess = () => {
+    fetchMeetings(); // 重新載入會議列表
+    showToast('會議新增成功！', 'success');
   };
 
   const getStatusBadge = (status) => {
@@ -105,7 +116,7 @@ export default function MeetingListPage() {
             會議列表
           </h1>
         </div>
-        <button className="btn btn-primary">
+        <button className="btn btn-primary" onClick={handleCreateMeeting}>
           新增會議
         </button>
       </div>
@@ -218,6 +229,13 @@ export default function MeetingListPage() {
         }}
         onSuccess={handleEditSuccess}
         meeting={selectedMeeting}
+      />
+
+      {/* 新增會議彈窗 */}
+      <CreateMeetingModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={handleCreateSuccess}
       />
 
       {/* Toast 提示 */}

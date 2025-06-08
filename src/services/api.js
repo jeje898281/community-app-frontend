@@ -77,6 +77,11 @@ export function updateMeeting(data) {
   return apiClient.patch('/api/meeting', data);
 }
 
+// 新增會議
+export function createMeeting(data) {
+  return apiClient.post('/api/meeting', data);
+}
+
 // === 個人資料相關API ===
 // 獲取個人資料
 export function getProfile() {
@@ -86,6 +91,11 @@ export function getProfile() {
 // 更新個人資料
 export function updateProfile(data) {
   return apiClient.put('/api/profile', data);
+}
+
+// 修改密碼
+export function changePassword(data) {
+  return apiClient.put('/api/profile/password', data);
 }
 
 // === 社區資訊相關API ===

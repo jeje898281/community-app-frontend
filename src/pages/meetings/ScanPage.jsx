@@ -44,6 +44,7 @@ function ScanPage() {
       if (!jwtToken) {
         setScanResult({
           type: 'error',
+          code: 'INVALID_QR_CODE',
           message: '無效的QR碼',
           details: '此QR碼不包含有效的簽到資訊',
           residentCode: ''
@@ -55,6 +56,7 @@ function ScanPage() {
       if (!payload || !payload.residentId || !payload.meetingId) {
         setScanResult({
           type: 'error',
+          code: 'INVALID_QR_CODE',
           message: 'QR碼格式錯誤',
           details: 'QR碼不包含必要的會議或住戶資訊',
           residentCode: ''
@@ -67,6 +69,7 @@ function ScanPage() {
       if (payload.meetingId !== meeting?.id) {
         setScanResult({
           type: 'error',
+          code: 'MEETING_NOT_MATCH',
           message: '會議不匹配',
           details: `此QR碼屬於其他會議，無法在當前會議中使用`,
           residentCode: residentCode
@@ -106,24 +109,16 @@ function ScanPage() {
       let errorMessage = '報到失敗';
       let errorDetails = '系統發生錯誤，請稍後再試';
 
-      if (error.response?.data?.error) {
-        const apiError = error.response.data.error;
+      if (error.response?.data?.code) {
+        const apiError = error.response.data.code;
         switch (apiError) {
-          case 'Already checked in':
+          case 'ALREADY_CHECKED_IN':
             errorMessage = '重複報到';
             errorDetails = `${residentCode} 已經報到過，無需重複報到`;
             break;
-          case 'Invalid token':
-            errorMessage = 'QR碼無效';
-            errorDetails = '此QR碼已過期或無效，請重新獲取';
-            break;
-          case 'Meeting not found':
-            errorMessage = '會議不存在';
-            errorDetails = '找不到對應的會議資訊';
-            break;
-          case 'Resident not found':
-            errorMessage = '住戶不存在';
-            errorDetails = `${residentCode} 不在住戶清單中`;
+          case 'MEETING_NOT_MATCH':
+            errorMessage = '會議不匹配';
+            errorDetails = `此QR碼屬於其他會議，無法在當前會議中使用`;
             break;
           default:
             errorDetails = `系統錯誤: ${apiError}`;

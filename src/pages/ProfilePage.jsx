@@ -29,7 +29,7 @@ export default function ProfilePage() {
         try {
             setLoading(true);
             const response = await getProfile();
-            if (response.data.success) {
+            if (response.status >= 200 && response.status < 300) {
                 setProfile(response.data.data);
                 setFormData({ displayName: response.data.data.displayName });
             } else {
@@ -67,18 +67,24 @@ export default function ProfilePage() {
         try {
             setUpdating(true);
             const response = await updateProfile(formData);
+            console.log('response', response);
+            console.log('formData', formData);
+            if (response.status >= 200 && response.status < 300) {
+                // 手動更新 profile state，保留原有完整數據
+                setProfile(prevProfile => ({
+                    ...prevProfile,
+                    displayName: formData.displayName,
+                    updatedAt: new Date().toISOString()
+                }));
 
-            if (response.data.success) {
-                const updatedProfile = response.data.data;
-                setProfile(updatedProfile);
                 setIsEditing(false);
-                showToast(response.data.message || '資料更新成功', 'success');
+                showToast('資料更新成功', 'success');
 
                 // 更新Context中的displayName
                 const currentUserData = {
                     token: localStorage.getItem('token'),
                     username: localStorage.getItem('username'),
-                    displayName: updatedProfile.displayName,
+                    displayName: formData.displayName,
                     community: {
                         name: localStorage.getItem('communityName'),
                         description: localStorage.getItem('communityDescription')

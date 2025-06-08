@@ -133,7 +133,7 @@ function BulkImportModal({ isOpen, onClose, onSuccess }) {
             setImportResult(response.data);
             setStep(3);
 
-            if (response.data.success) {
+            if (response.status >= 200 && response.status < 300) {
                 showToast(`成功匯入 ${response.data.importedCount} 筆住戶資料`, 'success');
                 onSuccess();
             } else {

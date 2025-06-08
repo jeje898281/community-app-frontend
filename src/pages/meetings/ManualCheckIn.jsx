@@ -60,8 +60,7 @@ function ManualCheckIn() {
       setUnitCode('');
       setSuccessCount(prev => prev + 1);
     } catch (err) {
-      console.error(err);
-      if (err.response?.data?.error === 'Already checked in') {
+      if (err.response?.data?.code === 'ALREADY_CHECKED_IN') {
         setMsg(`${code} 已報到過`);
         setMsgType('warning');
       } else {
