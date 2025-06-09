@@ -6,8 +6,9 @@
   z-index: 9999;
   padding: var(--space-4) var(--space-6);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-2xl);
-  backdrop-filter: blur(8px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   animation: toastSlideIn 0.3s ease-out;
   min-width: 300px;
   max-width: 500px;
@@ -43,8 +44,8 @@
 }
 
 .toast-info {
-  background: rgba(59, 130, 246, 0.95);
-  border: 1px solid rgb(59, 130, 246);
+  background: rgba(14, 165, 233, 0.9);
+  border: 1px solid rgba(14, 165, 233, 0.8);
   color: white;
 }
 

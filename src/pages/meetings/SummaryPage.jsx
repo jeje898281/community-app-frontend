@@ -48,7 +48,7 @@ function Summary() {
     return (
       <div className="summary-page">
         <div className="error-container">
-          <div className="error-icon">⚠️</div>
+          <div className="error-icon"></div>
           <h3>載入失敗</h3>
           <p className="error-message">{error}</p>
           <button
@@ -85,7 +85,7 @@ function Summary() {
           <div className="status-header">
             <h1 className="meeting-title">出席統計</h1>
             <div className={`meeting-status-badge ${allThresholdReached ? 'success' : 'warning'}`}>
-              {allThresholdReached ? '✅ 可順利開會' : '⚠️ 門檻未達成'}
+              {allThresholdReached ? '可順利開會' : '門檻未達成'}
             </div>
           </div>
 
@@ -103,9 +103,7 @@ function Summary() {
                     <span className="unit">戶</span>
                   </div>
                 </div>
-                <div className={`threshold-status ${reachedResidentThreshold ? 'reached' : 'not-reached'}`}>
-                  {reachedResidentThreshold ? '✅' : '❌'}
-                </div>
+
               </div>
               <div className="progress-container">
                 <div className="progress-bar">
@@ -123,7 +121,7 @@ function Summary() {
             {/* 坪數統計 */}
             <div className="threshold-item">
               <div className="threshold-header">
-                <div className="threshold-icon">📐</div>
+                <div className="threshold-icon"></div>
                 <div className="threshold-info">
                   <h3>出席坪數</h3>
                   <div className="threshold-values">
@@ -133,9 +131,7 @@ function Summary() {
                     <span className="unit">坪</span>
                   </div>
                 </div>
-                <div className={`threshold-status ${reachedSqmThreshold ? 'reached' : 'not-reached'}`}>
-                  {reachedSqmThreshold ? '✅' : '❌'}
-                </div>
+
               </div>
               <div className="progress-container">
                 <div className="progress-bar">
@@ -156,12 +152,12 @@ function Summary() {
             <div className="summary-content">
               {allThresholdReached ? (
                 <div className="success-message">
-                  <span className="message-icon">🎉</span>
+                  <span className="message-icon"></span>
                   <span>達成全部門檻，會議可以順利進行！</span>
                 </div>
               ) : (
                 <div className="warning-message">
-                  <span className="message-icon">⏳</span>
+                  <span className="message-icon"></span>
                   <span>
                     {!reachedResidentThreshold && !reachedSqmThreshold ?
                       '戶數和坪數門檻都尚未達成' :

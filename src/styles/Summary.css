@@ -7,6 +7,11 @@
   background: var(--bg-primary);
 }
 
+/* 統一按鈕圓角樣式 */
+.summary-page .btn {
+  border-radius: var(--radius-lg);
+}
+
 .summary-container {
   width: 100%;
 }

@@ -290,7 +290,7 @@
   padding: var(--space-1) var(--space-2);
   font-size: var(--text-xs);
   font-weight: var(--font-medium);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-lg);
   cursor: pointer;
   transition: all var(--transition-fast);
   border: none;
@@ -362,16 +362,16 @@
   box-shadow: var(--shadow-md) !important;
 }
 
-/* 卡片標題區的編輯按鈕 - 確保在右邊並且很小 */
+/* 卡片標題區的編輯按鈕 - 使用统一的圆角设计 */
 .card-header .btn,
 .card-header .edit-button,
 .card-header .profile-edit-button {
-  padding: 2px 6px !important;
-  font-size: 10px !important;
+  padding: 0.375rem 0.75rem !important;
+  font-size: 0.875rem !important;
   min-width: auto !important;
   height: auto !important;
-  line-height: 1.1 !important;
-  border-radius: 3px !important;
+  line-height: 1.4 !important;  
+  border-radius: var(--radius-lg) !important;
   flex-shrink: 0;
   margin-left: auto;
   font-weight: 500 !important;
@@ -390,13 +390,13 @@
   margin-right: var(--space-2);
 }
 
-/* Badge樣式 - 更小巧 */
+/* Badge樣式 - 更小巧且圓滑 */
 .badge {
   display: inline-block;
   padding: var(--space-1) var(--space-2);
   font-size: var(--text-xs);
   font-weight: 600;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-lg);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }

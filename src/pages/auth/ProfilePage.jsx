@@ -290,29 +290,6 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* 社區資訊卡片 */}
-          {(communityName || communityDescription) && (
-            <div className="community-card">
-              <div className="card-header">
-                <h2 className="card-title">社區資訊</h2>
-              </div>
-              <div className="card-body">
-                <div className="community-info">
-                  <div className="community-item">
-                    <label className="community-label">社區名稱</label>
-                    <span className="community-value">{communityName || '-'}</span>
-                  </div>
-                  {communityDescription && (
-                    <div className="community-item">
-                      <label className="community-label">社區描述</label>
-                      <p className="community-description">{communityDescription}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* 快速操作卡片 */}
           <div className="actions-card">
             <div className="card-header">

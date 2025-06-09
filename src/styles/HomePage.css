@@ -120,9 +120,13 @@ body {
   max-width: 1400px;
   margin: 0 auto;
   text-align: center;
-  background: var(--bg-secondary);
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: var(--radius-2xl);
   margin-top: var(--space-16);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .features-section h2 {
@@ -148,17 +152,19 @@ body {
 
 .features {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: var(--space-8);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-6);
   margin-top: var(--space-12);
 }
 
 .feature {
-  background: var(--bg-tertiary);
-  padding: var(--space-8);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-base);
-  border: 1px solid var(--border-light);
+  background: rgba(51, 65, 85, 0.3);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: var(--space-6);
+  border-radius: var(--radius-2xl);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(148, 163, 184, 0.2);
   transition: all var(--transition-base);
   position: relative;
   overflow: hidden;
@@ -184,36 +190,27 @@ body {
 
 .feature:hover {
   transform: translateY(-8px);
-  box-shadow: var(--shadow-xl);
-  border-color: var(--border-medium);
-  background: var(--bg-quaternary);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+  border-color: rgba(148, 163, 184, 0.3);
+  background: rgba(51, 65, 85, 0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .feature h3 {
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   font-weight: var(--font-semibold);
   color: var(--text-primary);
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-3);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
-/* 為每個功能添加圖標 */
-.feature:nth-child(1) h3::before {
-  content: "🏓";
-  font-size: 2rem;
-}
-
-.feature:nth-child(2) h3::before {
-  content: "📊";
-  font-size: 2rem;
-}
-
-.feature:nth-child(3) h3::before {
-  content: "👥";
-  font-size: 2rem;
+/* 功能標題樣式 */
+.feature h3::before {
+  display: none;
 }
 
 .feature p {
@@ -291,8 +288,8 @@ body {
   }
 
   .features {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: var(--space-6);
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--space-5);
   }
 }
 
@@ -330,7 +327,7 @@ body {
   }
 
   .feature {
-    padding: var(--space-6);
+    padding: var(--space-5);
   }
 }
 

@@ -204,7 +204,7 @@
   background: linear-gradient(135deg, var(--error-50) 0%, var(--error-100) 100%);
   color: var(--error-700);
   border: 1px solid var(--error-200);
-  border-radius: var(--radius-base);
+  border-radius: var(--radius-lg);
   font-size: var(--text-sm);
   font-weight: 500;
   margin-bottom: var(--space-4);

@@ -177,15 +177,6 @@ export default function CommunityPage() {
           <div className="header-content">
             <h1 className="page-title community-title">社區管理</h1>
           </div>
-          {role === 'admin' && (
-            <button
-              className="btn btn-sm btn-secondary community-edit-button"
-              onClick={() => setIsEditing(!isEditing)}
-              disabled={updating}
-            >
-              {isEditing ? '取消' : '編輯'}
-            </button>
-          )}
         </div>
 
         <div className="community-content">
@@ -193,14 +184,18 @@ export default function CommunityPage() {
           <div className="community-info-card">
             <div className="card-header">
               <h2 className="card-title community-card-title">社區基本資訊</h2>
+              {role === 'admin' && (
+                <button
+                  className="btn btn-sm btn-secondary community-edit-button"
+                  onClick={() => setIsEditing(!isEditing)}
+                  disabled={updating}
+                >
+                  {isEditing ? '取消' : '編輯'}
+                </button>
+              )}
             </div>
             <div className="card-body">
               <div className="community-details">
-                <div className="detail-item">
-                  <label className="detail-label">社區ID</label>
-                  <div className="detail-value">{community.id}</div>
-                </div>
-
                 <div className="detail-item">
                   <label className="detail-label">社區名稱</label>
                   {isEditing ? (
@@ -265,16 +260,6 @@ export default function CommunityPage() {
                 <div className="detail-item">
                   <label className="detail-label">進行中會議</label>
                   <div className="detail-value">{community.stats.activeMeetings} 場</div>
-                </div>
-
-                <div className="detail-item">
-                  <label className="detail-label">建立時間</label>
-                  <div className="detail-value">{formatDateTime(community.createdAt)}</div>
-                </div>
-
-                <div className="detail-item">
-                  <label className="detail-label">最後更新</label>
-                  <div className="detail-value">{formatDateTime(community.updatedAt)}</div>
                 </div>
               </div>
 
