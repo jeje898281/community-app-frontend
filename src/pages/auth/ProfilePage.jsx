@@ -42,7 +42,7 @@ export default function ProfilePage() {
     } catch (error) {
       console.error('載入個人資料失敗:', error);
 
-      const errorCode = error.response?.data?.errorCode;
+      const errorCode = error.response?.data?.code;
       const errorMessage = getErrorMessage(errorCode) || error.response?.data?.message || '載入個人資料失敗';
 
       showToast(errorMessage, 'error');
@@ -122,7 +122,7 @@ export default function ProfilePage() {
       console.error('更新個人資料失敗:', error);
 
       // 使用錯誤代碼常數來獲取錯誤訊息
-      const errorCode = error.response?.data?.errorCode;
+      const errorCode = error.response?.data?.code;
       const errorMessage = getErrorMessage(errorCode) || error.response?.data?.message || '更新失敗，請稍後再試';
 
       showToast(errorMessage, 'error');

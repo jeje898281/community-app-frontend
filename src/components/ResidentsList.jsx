@@ -1,6 +1,7 @@
 //src/components/ResidentsList.jsx
 import React, { useEffect, useState, useMemo } from 'react';
 import { listResidents } from '../services/api';
+import { getErrorMessage } from '../constants/errorCodes';
 import CreateResidentModal from './CreateResidentModal';
 import BulkImportModal from './BulkImportModal';
 import Toast from './Toast';
@@ -33,7 +34,11 @@ function ResidentsList() {
         setError(null);
       } catch (err) {
         console.error('Failed to fetch residents:', err);
-        setError('無法載入住戶資料');
+
+        // 使用錯誤代碼常數來獲取準確的錯誤訊息
+        const errorCode = err.response?.data?.code;
+        const errorMessage = getErrorMessage(errorCode) || err.response?.data?.message || '無法載入住戶資料';
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -97,7 +102,11 @@ function ResidentsList() {
       setError(null);
     } catch (err) {
       console.error('Failed to fetch residents:', err);
-      setError('無法載入住戶資料');
+
+      // 使用錯誤代碼常數來獲取準確的錯誤訊息
+      const errorCode = err.response?.data?.code;
+      const errorMessage = getErrorMessage(errorCode) || err.response?.data?.message || '無法載入住戶資料';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

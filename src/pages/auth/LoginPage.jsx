@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login as apiLogin } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
+import { getErrorMessage } from '../../constants/errorCodes';
 import '../../styles/LoginPage.css';
 
 export default function LoginPage() {
@@ -39,7 +40,11 @@ export default function LoginPage() {
       navigate('/', { replace: true });
     } catch (err) {
       console.error('登入失敗:', err);
-      setError('登入失敗，請檢查帳號密碼');
+
+      // 使用錯誤代碼常數來獲取準確的錯誤訊息
+      const errorCode = err.response?.data?.code;
+      const errorMessage = getErrorMessage(errorCode) || err.response?.data?.message || '登入失敗，請檢查帳號密碼';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

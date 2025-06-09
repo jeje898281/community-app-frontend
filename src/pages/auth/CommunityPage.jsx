@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getCommunityInfo, updateCommunityInfo } from '../../services/api';
+import { getErrorMessage } from '../../constants/errorCodes';
 import Toast from '../../components/Toast';
 import '../../styles/CommunityPage.css';
 
@@ -51,7 +52,11 @@ export default function CommunityPage() {
       }
     } catch (error) {
       console.error('載入社區資訊失敗:', error);
-      showToast(error.response?.data?.message || '載入社區資訊失敗', 'error');
+
+      // 使用錯誤代碼常數來獲取準確的錯誤訊息
+      const errorCode = error.response?.data?.code;
+      const errorMessage = getErrorMessage(errorCode) || error.response?.data?.message || '載入社區資訊失敗';
+      showToast(errorMessage, 'error');
     } finally {
       setLoading(false);
     }
@@ -120,7 +125,11 @@ export default function CommunityPage() {
       }
     } catch (error) {
       console.error('更新社區資訊失敗:', error);
-      showToast(error.response?.data?.message || '更新失敗，請稍後再試', 'error');
+
+      // 使用錯誤代碼常數來獲取準確的錯誤訊息
+      const errorCode = error.response?.data?.code;
+      const errorMessage = getErrorMessage(errorCode) || error.response?.data?.message || '更新失敗，請稍後再試';
+      showToast(errorMessage, 'error');
     } finally {
       setUpdating(false);
     }

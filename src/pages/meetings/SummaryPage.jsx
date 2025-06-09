@@ -1,6 +1,7 @@
 //src/pages/meetings/SummaryPage.jsx
 import React, { useEffect, useState } from 'react';
 import { getAttendanceSummary } from '../../services/api';
+import { getErrorMessage } from '../../constants/errorCodes';
 import '../../styles/Summary.css';
 import { useMeeting } from '../../contexts/MeetingContext';
 
@@ -21,7 +22,11 @@ function Summary() {
       })
       .catch((err) => {
         console.error('取得統計失敗:', err);
-        setError('無法取得統計數據');
+
+        // 使用錯誤代碼常數來獲取準確的錯誤訊息
+        const errorCode = err.response?.data?.code;
+        const errorMessage = getErrorMessage(errorCode) || err.response?.data?.message || '無法取得統計數據';
+        setError(errorMessage);
       })
       .finally(() => setLoading(false));
   }, [meetingId]);

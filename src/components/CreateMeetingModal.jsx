@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { createMeeting } from '../services/api';
+import { getErrorMessage } from '../constants/errorCodes';
 import '../styles/EditMeetingModal.css';
 
 function CreateMeetingModal({ isOpen, onClose, onSuccess }) {
@@ -80,7 +81,11 @@ function CreateMeetingModal({ isOpen, onClose, onSuccess }) {
             setErrors({});
         } catch (error) {
             console.error('Create meeting failed:', error);
-            setErrors({ general: error.response?.data?.message || '新增失敗，請稍後再試' });
+
+            // 使用錯誤代碼常數來獲取準確的錯誤訊息
+            const errorCode = error.response?.data?.code;
+            const errorMessage = getErrorMessage(errorCode) || error.response?.data?.message || '創建失敗，請稍後再試';
+            setErrors({ general: errorMessage });
         } finally {
             setIsSubmitting(false);
         }

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { generateQRCodes, listResidents } from '../../services/api';
 import { useMeeting } from '../../contexts/MeetingContext';
+import { getErrorMessage } from '../../constants/errorCodes';
 import JSZip from 'jszip';
 import '../../styles/QRCodePage.css';
 
@@ -22,7 +23,11 @@ function QRCodePage() {
                 setResidents(response.data.data || []);
             } catch (err) {
                 console.error('載入住戶清單失敗:', err);
-                setError('無法載入住戶清單');
+
+                // 使用錯誤代碼常數來獲取準確的錯誤訊息
+                const errorCode = err.response?.data?.code;
+                const errorMessage = getErrorMessage(errorCode) || err.response?.data?.message || '無法載入住戶清單';
+                setError(errorMessage);
             }
         };
 
@@ -50,7 +55,11 @@ function QRCodePage() {
             setQrCodes(response.data.data || []);
         } catch (err) {
             console.error('生成QR碼失敗:', err);
-            setError('生成QR碼失敗，請稍後再試');
+
+            // 使用錯誤代碼常數來獲取準確的錯誤訊息
+            const errorCode = err.response?.data?.code;
+            const errorMessage = getErrorMessage(errorCode) || err.response?.data?.message || '生成QR碼失敗，請稍後再試';
+            setError(errorMessage);
         } finally {
             setIsGenerating(false);
         }
@@ -126,7 +135,11 @@ function QRCodePage() {
 
         } catch (err) {
             console.error('下載ZIP檔案失敗:', err);
-            setError('下載失敗，請稍後再試');
+
+            // 使用錯誤代碼常數來獲取準確的錯誤訊息
+            const errorCode = err.response?.data?.code;
+            const errorMessage = getErrorMessage(errorCode) || err.response?.data?.message || '下載失敗，請稍後再試';
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }

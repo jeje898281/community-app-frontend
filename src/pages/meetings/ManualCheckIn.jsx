@@ -1,36 +1,17 @@
 //src/pages/meetings/ManualCheckIn.jsx
-import React, { useState, useEffect } from 'react';
-import { listResidents, manualCheckIn } from '../../services/api';
+import React, { useState } from 'react';
+import { manualCheckIn } from '../../services/api';
 import { useMeeting } from '../../contexts/MeetingContext';
 import '../../styles/ManualCheckIn.css';
 
 function ManualCheckIn() {
   const [unitCode, setUnitCode] = useState('');
-  const [residentsMap, setResidentsMap] = useState({});
   const [msg, setMsg] = useState('');
   const [msgType, setMsgType] = useState(''); // 'success', 'error', 'warning'
   const [loading, setLoading] = useState(false);
-  const [residentLoading, setResidentLoading] = useState(true);
   const [successCount, setSuccessCount] = useState(0);
   const { meeting } = useMeeting();
   const meetingId = meeting?.id;
-
-  useEffect(() => {
-    listResidents()
-      .then(res => {
-        const map = {};
-        res.data.data.forEach(r => {
-          map[r.code.toUpperCase()] = r.id;
-        });
-        setResidentsMap(map);
-      })
-      .catch(err => {
-        console.error('住戶清單讀取失敗', err);
-        setMsg('無法取得住戶資料，請稍後再試');
-        setMsgType('error');
-      })
-      .finally(() => setResidentLoading(false));
-  }, []);
 
   const handleCheckIn = async (e) => {
     e.preventDefault();
@@ -42,19 +23,11 @@ function ManualCheckIn() {
     }
 
     const code = unitCode.trim().toUpperCase();
-    const residentId = residentsMap[code];
-
-    if (!residentId) {
-      setMsg(`查無此戶號：${code}`);
-      setMsgType('error');
-      return;
-    }
-
     setLoading(true);
     setMsg('');
 
     try {
-      await manualCheckIn({ meetingId, residentId });
+      await manualCheckIn({ meetingId, residentCode: code });
       setMsg(`${code} 報到成功！`);
       setMsgType('success');
       setUnitCode('');
@@ -63,6 +36,9 @@ function ManualCheckIn() {
       if (err.response?.data?.code === 'ALREADY_CHECKED_IN') {
         setMsg(`${code} 已報到過`);
         setMsgType('warning');
+      } else if (err.response?.data?.code === 'RESIDENT_NOT_FOUND') {
+        setMsg(`查無此戶號：${code}`);
+        setMsgType('error');
       } else {
         setMsg('報到失敗，請稍後再試');
         setMsgType('error');
@@ -76,19 +52,6 @@ function ManualCheckIn() {
     setMsg('');
     setMsgType('');
   };
-
-  if (residentLoading) {
-    return (
-      <div className="manual-checkin-page">
-        <div className="loading-container">
-          <div className="loading-spinner">
-            <div className="spinner"></div>
-            <p>載入住戶資料中...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="manual-checkin-page">

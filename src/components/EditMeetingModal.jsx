@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { updateMeeting } from '../services/api';
+import { getErrorMessage } from '../constants/errorCodes';
 import '../styles/EditMeetingModal.css';
 
 function EditMeetingModal({ isOpen, onClose, onSuccess, meeting }) {
@@ -88,7 +89,11 @@ function EditMeetingModal({ isOpen, onClose, onSuccess, meeting }) {
             setErrors({});
         } catch (error) {
             console.error('Edit meeting failed:', error);
-            setErrors({ general: error.response?.data?.message || '更新失敗，請稍後再試' });
+
+            // 使用錯誤代碼常數來獲取準確的錯誤訊息
+            const errorCode = error.response?.data?.code;
+            const errorMessage = getErrorMessage(errorCode) || error.response?.data?.message || '更新失敗，請稍後再試';
+            setErrors({ general: errorMessage });
         } finally {
             setIsSubmitting(false);
         }

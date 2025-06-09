@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { bulkImportResidents } from '../services/api';
+import { getErrorMessage } from '../constants/errorCodes';
 import Toast from './Toast';
 import '../styles/BulkImportModal.css';
 
@@ -91,8 +92,12 @@ function BulkImportModal({ isOpen, onClose, onSuccess }) {
                 setPreviewData(data.slice(0, 10));
                 setStep(2);
             } catch (err) {
-                setError('檔案格式錯誤，請檢查CSV格式');
-                console.error('CSV parsing error:', err);
+                console.error('File read error:', err);
+
+                // 使用錯誤代碼常數來獲取準確的錯誤訊息
+                const errorCode = err.response?.data?.code;
+                const errorMessage = getErrorMessage(errorCode) || err.response?.data?.message || '檔案讀取失敗';
+                setError(errorMessage);
             }
         };
         reader.readAsText(file, 'UTF-8');
@@ -141,7 +146,11 @@ function BulkImportModal({ isOpen, onClose, onSuccess }) {
             }
         } catch (err) {
             console.error('Import error:', err);
-            setError(err.response?.data?.message || '匯入失敗，請稍後再試');
+
+            // 使用錯誤代碼常數來獲取準確的錯誤訊息
+            const errorCode = err.response?.data?.code;
+            const errorMessage = getErrorMessage(errorCode) || err.response?.data?.message || '匯入失敗，請稍後再試';
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }

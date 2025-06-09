@@ -4,6 +4,7 @@ import QrScanner from '../../components/QrScanner';
 import { scanAttendance, listResidents } from '../../services/api';
 import { parseJWT, extractJWTFromQR } from '../../utils/jwtUtils';
 import { useMeeting } from '../../contexts/MeetingContext';
+import { getErrorMessage } from '../../constants/errorCodes';
 import '../../styles/ScanPage.css';
 
 function ScanPage() {
@@ -21,6 +22,11 @@ function ScanPage() {
         setResidents(response.data.data || []);
       } catch (err) {
         console.error('載入住戶清單失敗:', err);
+
+        // 使用錯誤代碼常數來獲取準確的錯誤訊息
+        const errorCode = err.response?.data?.code;
+        const errorMessage = getErrorMessage(errorCode) || err.response?.data?.message || '載入住戶清單失敗';
+        console.error(errorMessage);
       }
     };
     fetchResidents();
@@ -106,26 +112,29 @@ function ScanPage() {
         return '';
       })();
 
+      // 使用錯誤代碼常數來獲取準確的錯誤訊息
+      const errorCode = error.response?.data?.code;
       let errorMessage = '報到失敗';
       let errorDetails = '系統發生錯誤，請稍後再試';
 
-      if (error.response?.data?.code) {
-        const apiError = error.response.data.code;
-        switch (apiError) {
-          case 'ALREADY_CHECKED_IN':
-            errorMessage = '重複報到';
-            errorDetails = `${residentCode} 已經報到過，無需重複報到`;
-            break;
-          case 'MEETING_NOT_MATCH':
-            errorMessage = '會議不匹配';
-            errorDetails = `此QR碼屬於其他會議，無法在當前會議中使用`;
-            break;
-          default:
-            errorDetails = `系統錯誤: ${apiError}`;
+      if (errorCode) {
+        const standardErrorMessage = getErrorMessage(errorCode);
+        if (standardErrorMessage) {
+          errorMessage = standardErrorMessage.includes('已經報到過') ? '重複報到' :
+            standardErrorMessage.includes('其他會議') ? '會議不匹配' : '報到失敗';
+          errorDetails = errorCode === 'ALREADY_CHECKED_IN' ?
+            `${residentCode} 已經報到過，無需重複報到` :
+            errorCode === 'MEETING_NOT_MATCH' ?
+              `此QR碼屬於其他會議，無法在當前會議中使用` :
+              standardErrorMessage;
+        } else {
+          errorDetails = `系統錯誤: ${errorCode}`;
         }
       } else if (error.code === 'NETWORK_ERROR') {
         errorMessage = '網路錯誤';
         errorDetails = '無法連接到伺服器，請檢查網路連線';
+      } else if (error.response?.data?.message) {
+        errorDetails = error.response.data.message;
       }
 
       setScanResult({

@@ -126,7 +126,7 @@ export default function ChangePasswordModal({ isOpen, onClose, onSuccess, onErro
             console.error('修改密碼失敗:', error);
 
             // 使用統一的錯誤處理函數
-            const errorCode = error.response?.data?.errorCode;
+            const errorCode = error.response?.data?.code;
             const errorMessage = getErrorMessage(errorCode) || error.response?.data?.message || '修改密碼失敗，請稍後再試';
 
             // 如果是目前密碼錯誤，清空目前密碼欄位

@@ -28,10 +28,10 @@ export function login({ username, password }) {
   return apiClient.post('/api/auth/login', { username, password });
 }
 
-export function manualCheckIn({ meetingId, residentId }) {
+export function manualCheckIn({ meetingId, residentCode }) {
   return apiClient.post('/api/meeting/checkin', {
     meetingId,
-    residentId,
+    residentCode,
     isManual: true
   });
 }

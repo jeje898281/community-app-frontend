@@ -28,17 +28,23 @@ function HomePage() {
           <div className="feature">
             <h3>快速掃描</h3>
             <p>使用 QR Code 即可快速完成檢測。</p>
-            <Link to="/scan" className="feature-link">了解更多</Link>
+            <Link to={isLoggedIn ? "/meetings" : "/login"} className="feature-link">
+              {isLoggedIn ? "選擇會議進行掃描" : "登入後使用"}
+            </Link>
           </div>
           <div className="feature">
             <h3>手動簽到</h3>
             <p>無需擔心設備問題，支援手動記錄。</p>
-            <Link to="/manual" className="feature-link">開始簽到</Link>
+            <Link to={isLoggedIn ? "/meetings" : "/login"} className="feature-link">
+              {isLoggedIn ? "選擇會議手動簽到" : "登入後使用"}
+            </Link>
           </div>
           <div className="feature">
             <h3>統計摘要</h3>
             <p>全面記錄與分析數據，隨時掌握狀況。</p>
-            <Link to="/summary" className="feature-link">查看摘要</Link>
+            <Link to={isLoggedIn ? "/meetings" : "/login"} className="feature-link">
+              {isLoggedIn ? "選擇會議查看統計" : "登入後使用"}
+            </Link>
           </div>
         </div>
       </section>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { deleteResident } from '../services/api';
+import { getErrorMessage } from '../constants/errorCodes';
 import '../styles/DeleteConfirmModal.css';
 
 function DeleteConfirmModal({ isOpen, onClose, onSuccess, resident }) {
@@ -18,13 +19,11 @@ function DeleteConfirmModal({ isOpen, onClose, onSuccess, resident }) {
             onClose();
         } catch (error) {
             console.error('Delete resident failed:', error);
-            if (error.response?.data?.errorCode === 'RESIDENT_NOT_FOUND') {
-                setError('住戶不存在');
-            } else if (error.response?.data?.errorCode === 'RESIDENT_HAS_CHECKIN_DATA') {
-                setError('此住戶已有簽到資料，無法刪除');
-            } else {
-                setError('刪除失敗，請稍後再試');
-            }
+
+            // 使用錯誤代碼常數來獲取準確的錯誤訊息
+            const errorCode = error.response?.data?.code;
+            const errorMessage = getErrorMessage(errorCode) || error.response?.data?.message || '刪除失敗，請稍後再試';
+            setError(errorMessage);
         } finally {
             setIsDeleting(false);
         }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { updateResident } from '../services/api';
+import { getErrorMessage } from '../constants/errorCodes';
 import '../styles/EditResidentModal.css';
 
 function EditResidentModal({ isOpen, onClose, onSuccess, resident }) {
@@ -76,10 +77,15 @@ function EditResidentModal({ isOpen, onClose, onSuccess, resident }) {
             setErrors({});
         } catch (error) {
             console.error('Edit resident failed:', error);
-            if (error.response?.data?.errorCode === 'CODE_ALREADY_EXISTS') {
-                setErrors({ code: '此住戶戶號已被使用，請更換其他戶號' });
+
+            // 使用錯誤代碼常數來獲取準確的錯誤訊息
+            const errorCode = error.response?.data?.code;
+            const errorMessage = getErrorMessage(errorCode) || error.response?.data?.message || '編輯失敗，請稍後再試';
+
+            if (errorCode === 'CODE_ALREADY_EXISTS' || errorCode === 'RESIDENT_CODE_ALREADY_EXISTS') {
+                setErrors({ code: errorMessage });
             } else {
-                setErrors({ general: error.response?.data?.message || '編輯失敗，請稍後再試' });
+                setErrors({ general: errorMessage });
             }
         } finally {
             setIsSubmitting(false);

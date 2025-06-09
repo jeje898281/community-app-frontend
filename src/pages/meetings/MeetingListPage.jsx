@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { listMeetings } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
+import { getErrorMessage } from '../../constants/errorCodes';
 import EditMeetingModal from '../../components/EditMeetingModal';
 import Toast from '../../components/Toast';
 import CreateMeetingModal from '../../components/CreateMeetingModal';
@@ -28,7 +29,11 @@ export default function MeetingListPage() {
       setMeetings(res.data.data);
     } catch (error) {
       console.error('Failed to fetch meetings:', error);
-      showToast('載入會議資料失敗', 'error');
+
+      // 使用錯誤代碼常數來獲取準確的錯誤訊息
+      const errorCode = error.response?.data?.code;
+      const errorMessage = getErrorMessage(errorCode) || error.response?.data?.message || '載入會議資料失敗';
+      showToast(errorMessage, 'error');
     } finally {
       setLoading(false);
     }
