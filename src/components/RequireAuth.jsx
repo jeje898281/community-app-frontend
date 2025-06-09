@@ -1,10 +1,22 @@
 //src/components/RequireAuth.jsx
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-function RequireAuth({ children }) {
+function RequireAuth({ children, redirectTo = "/login" }) {
     const { isLoggedIn } = useAuth();
-    return isLoggedIn ? children : <Navigate to="/login" replace />;
+    const location = useLocation();
+
+    if (!isLoggedIn) {
+        return (
+            <Navigate
+                to={redirectTo}
+                state={{ from: location.pathname }}
+                replace
+            />
+        );
+    }
+
+    return children;
 }
 
 export default RequireAuth;

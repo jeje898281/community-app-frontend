@@ -33,7 +33,7 @@ export default function NavBar() {
     <nav className="navbar" ref={menuRef}>
       <div className="navbar-container">
         <Link to="/" className="logo">
-          {communityName || '社區系統'}
+          {isLoggedIn && communityName ? communityName : '社區系統'}
         </Link>
 
         <ul className="nav-links">

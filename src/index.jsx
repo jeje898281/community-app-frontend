@@ -16,6 +16,7 @@ import MeetingLayout from './components/layout/MeetingLayout';
 // Pages
 import HomePage from './pages/home/HomePage';
 import LoginPage from './pages/auth/LoginPage';
+import PleaseLoginPage from './pages/auth/PleaseLoginPage';
 import ProfilePage from './pages/auth/ProfilePage';
 import CommunityPage from './pages/auth/CommunityPage';
 import MeetingListPage from './pages/meetings/MeetingListPage';
@@ -36,35 +37,61 @@ root.render(
     <AuthProvider>
       <Router>
         <Routes>
-
           {/* 1. 登入頁，不需驗證 */}
           <Route path="/login" element={<LoginPage />} />
 
-          {/* 2. 受保護路由：必須先登入 */}
-          <Route element={<RequireAuth><MainLayout /></RequireAuth>}>
-            {/* 2.1 首頁 */}
+          {/* 2. 請先登入頁面 */}
+          <Route path="/please-login" element={<PleaseLoginPage />} />
+
+          {/* 3. 主要布局 */}
+          <Route element={<MainLayout />}>
+            {/* 3.1 首頁 - 不需要登入 */}
             <Route index element={<HomePage />} />
 
-            {/* 2.2 住戶清單 */}
-            <Route path="residents" element={<ResidentsList />} />
-            {/* 個人資料 */}
-            <Route path="profile" element={<ProfilePage />} />
-            {/* 社區管理 */}
-            <Route path="communities" element={<CommunityPage />} />
+            {/* 3.2 受保護路由：必須先登入 */}
+            {/* 住戶清單 */}
+            <Route path="residents" element={
+              <RequireAuth redirectTo="/please-login">
+                <ResidentsList />
+              </RequireAuth>
+            } />
 
-            {/* 2.3 會議列表 */}
-            <Route path="meetings" element={<MeetingListPage />} />
-            {/* 2.4 單一會議上下文 */}
-            <Route path="meetings/:id" element={<MeetingLayout />}>
-              <Route index element={<Navigate to="scan" replace />} />
-              <Route path="scan" element={<ScanPage />} />
-              <Route path="manual" element={<ManualCheckIn />} />
-              <Route path="summary" element={<SummaryPage />} />
-              <Route path="qrcodes" element={<QRCodePage />} />
-            </Route>
+            {/* 個人資料 */}
+            <Route path="profile" element={
+              <RequireAuth redirectTo="/please-login">
+                <ProfilePage />
+              </RequireAuth>
+            } />
+
+            {/* 社區管理 */}
+            <Route path="communities" element={
+              <RequireAuth redirectTo="/please-login">
+                <CommunityPage />
+              </RequireAuth>
+            } />
+
+            {/* 會議列表 */}
+            <Route path="meetings" element={
+              <RequireAuth redirectTo="/please-login">
+                <MeetingListPage />
+              </RequireAuth>
+            } />
           </Route>
 
-          {/* 3. 其他不存在的路由導回首頁 */}
+          {/* 4. 單一會議上下文 - 需要特殊處理 */}
+          <Route path="meetings/:id" element={
+            <RequireAuth redirectTo="/please-login">
+              <MeetingLayout />
+            </RequireAuth>
+          }>
+            <Route index element={<Navigate to="scan" replace />} />
+            <Route path="scan" element={<ScanPage />} />
+            <Route path="manual" element={<ManualCheckIn />} />
+            <Route path="summary" element={<SummaryPage />} />
+            <Route path="qrcodes" element={<QRCodePage />} />
+          </Route>
+
+          {/* 5. 其他不存在的路由導回首頁 */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
