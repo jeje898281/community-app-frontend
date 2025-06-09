@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { updateMeeting } from '../services/api';
 import { getErrorMessage } from '../constants/errorCodes';
 import '../styles/EditMeetingModal.css';
+import '../styles/modal-enhanced.css';
 
 function EditMeetingModal({ isOpen, onClose, onSuccess, meeting }) {
     const [formData, setFormData] = useState({
@@ -120,7 +121,6 @@ function EditMeetingModal({ isOpen, onClose, onSuccess, meeting }) {
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                     <h2 className="modal-title">
-                        <span className="modal-icon">✏️</span>
                         編輯會議資料
                     </h2>
                     <button
@@ -128,7 +128,7 @@ function EditMeetingModal({ isOpen, onClose, onSuccess, meeting }) {
                         onClick={handleClose}
                         disabled={isSubmitting}
                     >
-                        ✖️
+                        ×
                     </button>
                 </div>
 
@@ -255,7 +255,6 @@ function EditMeetingModal({ isOpen, onClose, onSuccess, meeting }) {
 
                     {errors.general && (
                         <div className="error-alert">
-                            <span className="error-icon">⚠️</span>
                             {errors.general}
                         </div>
                     )}

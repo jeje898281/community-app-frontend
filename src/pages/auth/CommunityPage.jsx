@@ -175,18 +175,15 @@ export default function CommunityPage() {
       <div className="community-container">
         <div className="community-header">
           <div className="header-content">
-            <h1 className="page-title">
-              社區管理
-            </h1>
-            <p className="page-subtitle">管理社區資訊與活動</p>
+            <h1 className="page-title community-title">社區管理</h1>
           </div>
           {role === 'admin' && (
             <button
-              className="btn btn-primary"
+              className="btn btn-sm btn-secondary community-edit-button"
               onClick={() => setIsEditing(!isEditing)}
               disabled={updating}
             >
-              {isEditing ? '取消編輯' : '編輯資料'}
+              {isEditing ? '取消' : '編輯'}
             </button>
           )}
         </div>
@@ -195,9 +192,7 @@ export default function CommunityPage() {
           {/* 社區資訊卡片 */}
           <div className="community-info-card">
             <div className="card-header">
-              <h2 className="card-title">
-                社區基本資訊
-              </h2>
+              <h2 className="card-title community-card-title">社區基本資訊</h2>
             </div>
             <div className="card-body">
               <div className="community-details">
@@ -308,9 +303,7 @@ export default function CommunityPage() {
           {role === 'admin' && (
             <div className="quick-actions-section">
               <div className="card-header">
-                <h2 className="card-title">
-                  快速操作
-                </h2>
+                <h2 className="card-title community-card-title">快速操作</h2>
               </div>
               <div className="quick-actions-grid">
                 <button className="action-card" disabled>

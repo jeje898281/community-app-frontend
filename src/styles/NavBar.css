@@ -1,9 +1,9 @@
-/* 現代化導航欄樣式 */
+/* 現代化導航欄樣式 - 深色主題 */
 .navbar {
-  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+  background: var(--bg-secondary);
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: var(--shadow-lg);
+  border-bottom: 1px solid var(--border-light);
+  box-shadow: var(--shadow-base);
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
@@ -14,7 +14,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 var(--space-6);
   height: 4rem;
@@ -23,8 +23,8 @@
 /* Logo 樣式 */
 .logo {
   font-size: var(--text-xl);
-  font-weight: 700;
-  color: var(--text-white);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
   text-decoration: none;
   letter-spacing: -0.025em;
   transition: all var(--transition-fast);
@@ -34,12 +34,12 @@
 }
 
 .logo:hover {
-  color: var(--primary-100);
-  transform: scale(1.05);
+  color: var(--primary-400);
+  transform: scale(1.02);
 }
 
 .logo::before {
-  content: "🏘️";
+  content: "🏓";
   font-size: 1.5rem;
 }
 
@@ -61,41 +61,25 @@
   display: flex;
   align-items: center;
   padding: var(--space-2) var(--space-4);
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-secondary);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: var(--font-medium);
   font-size: var(--text-sm);
   border-radius: var(--radius-base);
   transition: all var(--transition-fast);
   position: relative;
-  overflow: hidden;
-}
-
-.nav-links a::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.1);
-  transition: width var(--transition-base);
-  z-index: -1;
-}
-
-.nav-links a:hover::before {
-  width: 100%;
 }
 
 .nav-links a:hover {
-  color: var(--text-white);
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
   transform: translateY(-1px);
 }
 
 .nav-links .active a {
-  color: var(--text-white);
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  font-weight: var(--font-semibold);
 }
 
 .nav-links .active a::after {
@@ -106,7 +90,7 @@
   transform: translateX(-50%);
   width: 60%;
   height: 2px;
-  background: var(--primary-200);
+  background: var(--primary-500);
   border-radius: var(--radius-full);
 }
 
@@ -119,22 +103,21 @@
 
 .btn-login {
   padding: var(--space-2) var(--space-5);
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-white);
+  background: var(--primary-600);
+  color: var(--text-primary);
   text-decoration: none;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--primary-600);
   border-radius: var(--radius-base);
-  font-weight: 500;
+  font-weight: var(--font-semibold);
   font-size: var(--text-sm);
   transition: all var(--transition-fast);
-  backdrop-filter: blur(10px);
 }
 
 .btn-login:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: var(--primary-700);
+  border-color: var(--primary-700);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 25px -8px var(--primary-600);
 }
 
 /* 用戶下拉選單 */
@@ -147,20 +130,19 @@
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-4);
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-white);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-medium);
   border-radius: var(--radius-base);
-  font-weight: 500;
+  font-weight: var(--font-medium);
   font-size: var(--text-sm);
   cursor: pointer;
   transition: all var(--transition-fast);
-  backdrop-filter: blur(10px);
 }
 
 .user-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: var(--bg-quaternary);
+  border-color: var(--border-dark);
   transform: translateY(-1px);
 }
 
@@ -181,7 +163,7 @@
   top: calc(100% + var(--space-2));
   right: 0;
   min-width: 200px;
-  background: var(--bg-primary);
+  background: var(--bg-secondary);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
@@ -214,34 +196,34 @@
   padding: var(--space-3) var(--space-4);
   color: var(--text-primary);
   text-decoration: none;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
   border: none;
   background: none;
-  font-size: var(--text-sm);
-  font-weight: 500;
   border-radius: var(--radius-base);
   cursor: pointer;
   transition: all var(--transition-fast);
+  text-align: left;
 }
 
 .dropdown-menu a:hover,
 .dropdown-menu button:hover {
-  background: var(--primary-50);
-  color: var(--primary-700);
-  transform: translateX(4px);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
 }
 
 .dropdown-menu .active a {
-  background: var(--primary-100);
-  color: var(--primary-800);
+  background: var(--primary-600);
+  color: var(--text-primary);
 }
 
 .logout-btn {
-  color: var(--error-600) !important;
+  color: var(--error-400) !important;
 }
 
 .logout-btn:hover {
-  background: var(--error-50) !important;
-  color: var(--error-700) !important;
+  background: var(--error-600) !important;
+  color: var(--text-primary) !important;
 }
 
 /* 響應式設計 */
@@ -256,7 +238,7 @@
   }
 
   .nav-links {
-    display: none; /* 在小螢幕上隱藏，可以後續添加漢堡選單 */
+    gap: 0;
   }
 
   .user-btn {
@@ -266,7 +248,7 @@
 
   .dropdown-menu {
     min-width: 180px;
-    right: var(--space-4);
+    right: var(--space-2);
   }
 }
 
@@ -285,21 +267,22 @@
   }
 }
 
-/* 滾動時的效果 */
+/* 滾動時的導航欄效果 */
 .navbar.scrolled {
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.95) 0%, rgba(29, 78, 216, 0.95) 100%);
+  background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-lg);
 }
 
-/* 載入動畫 */
+/* 動畫 */
 @keyframes slideDown {
   from {
-    transform: translateY(-100%);
     opacity: 0;
+    transform: translateY(-10px);
   }
   to {
-    transform: translateY(0);
     opacity: 1;
+    transform: translateY(0);
   }
 }
 

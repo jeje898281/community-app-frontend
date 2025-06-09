@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { createMeeting } from '../services/api';
 import { getErrorMessage } from '../constants/errorCodes';
 import '../styles/EditMeetingModal.css';
+import '../styles/modal-enhanced.css';
 
 function CreateMeetingModal({ isOpen, onClose, onSuccess }) {
     const [formData, setFormData] = useState({
@@ -120,7 +121,6 @@ function CreateMeetingModal({ isOpen, onClose, onSuccess }) {
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                     <h2 className="modal-title">
-                        <span className="modal-icon">➕</span>
                         新增會議
                     </h2>
                     <button
@@ -128,7 +128,7 @@ function CreateMeetingModal({ isOpen, onClose, onSuccess }) {
                         onClick={handleClose}
                         disabled={isSubmitting}
                     >
-                        ✖️
+                        ×
                     </button>
                 </div>
 
@@ -216,13 +216,21 @@ function CreateMeetingModal({ isOpen, onClose, onSuccess }) {
                             min="0"
                             value={formData.sqmThreshold}
                             onChange={(e) => {
-                                setFormData({ ...formData, sqmThreshold: e.target.value });
+                                let value = e.target.value;
+                                // 限制小數點後最多兩位
+                                if (value.includes('.')) {
+                                    const parts = value.split('.');
+                                    if (parts[1] && parts[1].length > 2) {
+                                        value = parts[0] + '.' + parts[1].substring(0, 2);
+                                    }
+                                }
+                                setFormData({ ...formData, sqmThreshold: value });
                                 if (errors.sqmThreshold) {
                                     setErrors({ ...errors, sqmThreshold: null });
                                 }
                             }}
                             className={`form-input ${errors.sqmThreshold ? 'error' : ''}`}
-                            placeholder="例如：50.00"
+                            placeholder="例如：100.50"
                             disabled={isSubmitting}
                         />
                         {errors.sqmThreshold && <span className="error-message">{errors.sqmThreshold}</span>}
@@ -244,7 +252,7 @@ function CreateMeetingModal({ isOpen, onClose, onSuccess }) {
                                 }
                             }}
                             className={`form-input ${errors.residentThreshold ? 'error' : ''}`}
-                            placeholder="例如：10"
+                            placeholder="例如：50"
                             disabled={isSubmitting}
                         />
                         {errors.residentThreshold && <span className="error-message">{errors.residentThreshold}</span>}

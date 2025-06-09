@@ -115,15 +115,17 @@ export default function MeetingListPage() {
 
   return (
     <div className="meeting-list-container">
-      <div className="meeting-list-header">
-        <div className="header-content">
+      <div className="page-header">
+        <div className="header-left">
           <h1 className="page-title">
             會議列表
           </h1>
         </div>
-        <button className="btn btn-primary" onClick={handleCreateMeeting}>
-          新增會議
-        </button>
+        <div className="header-actions">
+          <button className="btn btn-primary" onClick={handleCreateMeeting}>
+            新增會議
+          </button>
+        </div>
       </div>
 
       <div className="filter-tabs">
@@ -179,11 +181,9 @@ export default function MeetingListPage() {
               <div className="meeting-card-body">
                 <div className="meeting-info">
                   <div className="info-item">
-                    <span className="info-icon">📅</span>
                     <span className="info-text">{formatDate(meeting.date)}</span>
                   </div>
                   <div className="info-item">
-                    <span className="info-icon">⏰</span>
                     <span className="info-text">
                       {new Date(meeting.date).toLocaleTimeString('zh-TW', {
                         hour: '2-digit',
@@ -192,11 +192,9 @@ export default function MeetingListPage() {
                     </span>
                   </div>
                   <div className="info-item">
-                    <span className="info-icon">🏠</span>
                     <span className="info-text">坪數門檻: {meeting.sqmThreshold}</span>
                   </div>
                   <div className="info-item">
-                    <span className="info-icon">👥</span>
                     <span className="info-text">戶數門檻: {meeting.residentThreshold}</span>
                   </div>
                 </div>

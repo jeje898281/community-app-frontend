@@ -1,26 +1,32 @@
+/* 編輯住戶對話框樣式 - 深色主題 */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 1000;
-  backdrop-filter: blur(2px);
+  justify-content: center;
+  z-index: var(--z-modal);
+  padding: var(--space-4);
+  animation: modalOverlayIn 0.3s ease-out;
 }
 
 .modal-content {
-  background: white;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  animation: modalSlideIn 0.3s ease-out;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes modalSlideIn {
@@ -214,4 +220,12 @@
   color: #6b7280;
   margin-top: 4px;
   font-style: italic;
-} 
+}
+
+/* 只覆蓋需要不同的部分 */
+.modal-title::before {
+  content: "✏️";
+}
+
+/* 可以通過@import或共享類名來複用樣式 */
+@import './CreateResidentModal.css'; 

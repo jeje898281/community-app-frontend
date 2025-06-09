@@ -191,8 +191,7 @@ export default function ProfilePage() {
       <div className="profile-container">
         <div className="profile-header">
           <div className="header-content">
-            <h1 className="page-title">個人資料</h1>
-            <p className="page-subtitle">管理您的帳戶資訊</p>
+            <h1 className="page-title profile-title">個人資料</h1>
           </div>
         </div>
 
@@ -200,9 +199,9 @@ export default function ProfilePage() {
           {/* 個人資訊卡片 */}
           <div className="profile-card">
             <div className="card-header">
-              <h2 className="card-title">基本資訊</h2>
+              <h2 className="card-title profile-card-title">基本資訊</h2>
               <button
-                className="btn btn-sm btn-secondary"
+                className="btn btn-sm btn-secondary profile-edit-button"
                 onClick={() => setIsEditing(!isEditing)}
                 disabled={updating}
               >

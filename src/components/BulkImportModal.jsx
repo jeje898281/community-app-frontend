@@ -3,6 +3,7 @@ import { bulkImportResidents } from '../services/api';
 import { getErrorMessage } from '../constants/errorCodes';
 import Toast from './Toast';
 import '../styles/BulkImportModal.css';
+import '../styles/modal-enhanced.css';
 
 function BulkImportModal({ isOpen, onClose, onSuccess }) {
     const [csvFile, setCsvFile] = useState(null);
@@ -41,31 +42,33 @@ function BulkImportModal({ isOpen, onClose, onSuccess }) {
         document.body.removeChild(link);
     };
 
-    // 解析CSV檔案
+    // 解析CSV內容
     const parseCSV = (text) => {
         const lines = text.split('\n').filter(line => line.trim());
-        const result = [];
+        if (lines.length < 2) {
+            throw new Error('CSV檔案格式錯誤：至少需要標題行和一行數據');
+        }
 
-        for (let i = 1; i < lines.length; i++) { // 跳過表頭
-            const line = lines[i].trim();
-            if (!line) continue;
+        const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
+        const expectedHeaders = ['戶號', '坪數', '電子信箱'];
+        
+        if (!expectedHeaders.every(header => headers.includes(header))) {
+            throw new Error(`CSV檔案標題行格式錯誤，應包含：${expectedHeaders.join(', ')}`);
+        }
 
-            // 簡單的CSV解析（支援引號包圍的欄位）
-            const matches = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-            if (matches && matches.length >= 2) {
-                const code = matches[0]?.replace(/"/g, '').trim();
-                const residentSqm = matches[1]?.replace(/"/g, '').trim();
-                const email = matches[2]?.replace(/"/g, '').trim() || '';
-
-                result.push({
-                    code,
-                    residentSqm: parseFloat(residentSqm),
-                    email: email || undefined
+        const data = [];
+        for (let i = 1; i < lines.length; i++) {
+            const values = lines[i].split(',').map(v => v.replace(/"/g, '').trim());
+            if (values.length >= 2) {
+                data.push({
+                    code: values[0] || '',
+                    residentSqm: parseFloat(values[1]) || 0,
+                    email: values[2] || ''
                 });
             }
         }
 
-        return result;
+        return data;
     };
 
     // 處理檔案上傳
@@ -73,8 +76,8 @@ function BulkImportModal({ isOpen, onClose, onSuccess }) {
         const file = event.target.files[0];
         if (!file) return;
 
-        if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
-            setError('請選擇 CSV 格式的檔案');
+        if (!file.name.toLowerCase().endsWith('.csv')) {
+            setError('請選擇CSV格式的檔案');
             return;
         }
 
@@ -86,35 +89,35 @@ function BulkImportModal({ isOpen, onClose, onSuccess }) {
             try {
                 const text = e.target.result;
                 const data = parseCSV(text);
+                
                 setCsvData(data);
-
-                // 生成預覽資料（最多顯示前10筆）
-                setPreviewData(data.slice(0, 10));
+                setPreviewData(data.slice(0, 10)); // 只預覽前10筆
                 setStep(2);
             } catch (err) {
-                console.error('File read error:', err);
-
-                // 使用錯誤代碼常數來獲取準確的錯誤訊息
-                const errorCode = err.response?.data?.code;
-                const errorMessage = getErrorMessage(errorCode) || err.response?.data?.message || '檔案讀取失敗';
-                setError(errorMessage);
+                setError(err.message);
+                setCsvFile(null);
             }
         };
-        reader.readAsText(file, 'UTF-8');
+        reader.readAsText(file, 'utf-8');
+    };
+
+    // 觸發文件選擇
+    const triggerFileSelect = () => {
+        document.getElementById('csv-file-input').click();
     };
 
     // 驗證資料
     const validateData = (data) => {
         const errors = [];
-
-        data.forEach((row, index) => {
-            if (!row.code || row.code.trim() === '') {
+        
+        data.forEach((item, index) => {
+            if (!item.code || item.code.trim() === '') {
                 errors.push(`第 ${index + 2} 行：戶號不能為空`);
             }
-            if (!row.residentSqm || isNaN(row.residentSqm) || row.residentSqm <= 0) {
-                errors.push(`第 ${index + 2} 行：坪數格式錯誤`);
+            if (!item.residentSqm || item.residentSqm <= 0) {
+                errors.push(`第 ${index + 2} 行：坪數必須大於0`);
             }
-            if (row.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email)) {
+            if (item.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(item.email)) {
                 errors.push(`第 ${index + 2} 行：電子信箱格式錯誤`);
             }
         });
@@ -198,7 +201,7 @@ function BulkImportModal({ isOpen, onClose, onSuccess }) {
                             onClick={handleClose}
                             disabled={loading}
                         >
-                            ✕
+                            ×
                         </button>
                     </div>
 
@@ -206,7 +209,7 @@ function BulkImportModal({ isOpen, onClose, onSuccess }) {
                         {step === 1 && (
                             <div className="step-content">
                                 <div className="instruction-section">
-                                    <h3>📋 匯入說明</h3>
+                                    <h3>匯入說明</h3>
                                     <ul className="instruction-list">
                                         <li><strong>戶號</strong>：住戶的唯一識別碼（必填）</li>
                                         <li><strong>坪數</strong>：住戶的坪數，支援小數點（必填）</li>
@@ -219,7 +222,7 @@ function BulkImportModal({ isOpen, onClose, onSuccess }) {
                                             className="btn btn-secondary"
                                             onClick={downloadTemplate}
                                         >
-                                            📥 下載CSV模板
+                                            下載CSV模板
                                         </button>
                                         <p className="template-hint">
                                             建議先下載模板，按照格式填寫資料後再上傳
@@ -228,15 +231,32 @@ function BulkImportModal({ isOpen, onClose, onSuccess }) {
                                 </div>
 
                                 <div className="upload-section">
-                                    <h3>📁 選擇檔案</h3>
+                                    <h3>選擇檔案</h3>
+                                    
+                                    <div className="upload-area" onClick={triggerFileSelect}>
+                                        <div className="upload-icon">📄</div>
+                                        <div className="upload-text">
+                                            {csvFile ? csvFile.name : '點擊選擇CSV檔案'}
+                                        </div>
+                                        <div className="upload-hint">
+                                            支援CSV格式，檔案大小不超過10MB
+                                        </div>
+                                    </div>
+
                                     <input
+                                        id="csv-file-input"
                                         type="file"
                                         accept=".csv"
                                         onChange={handleFileChange}
                                         className="file-input"
                                         disabled={loading}
                                     />
-                                    <p className="file-hint">請選擇 CSV 格式的檔案</p>
+                                    
+                                    {error && (
+                                        <div className="error-message">
+                                            {error}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -244,7 +264,7 @@ function BulkImportModal({ isOpen, onClose, onSuccess }) {
                         {step === 2 && (
                             <div className="step-content">
                                 <div className="preview-header">
-                                    <h3>👀 資料預覽</h3>
+                                    <h3>資料預覽</h3>
                                     <p>共 {csvData.length} 筆資料，以下顯示前 {Math.min(csvData.length, 10)} 筆：</p>
                                 </div>
 
@@ -280,16 +300,16 @@ function BulkImportModal({ isOpen, onClose, onSuccess }) {
                         {step === 3 && importResult && (
                             <div className="step-content">
                                 <div className="result-section">
-                                    <h3>📊 匯入結果</h3>
+                                    <h3>匯入結果</h3>
 
                                     {importResult.success ? (
                                         <div className="success-result">
-                                            <div className="result-icon">✅</div>
+                                            <div className="result-icon">✓</div>
                                             <p>成功匯入 <strong>{importResult.importedCount}</strong> 筆住戶資料</p>
                                         </div>
                                     ) : (
                                         <div className="partial-result">
-                                            <div className="result-icon">⚠️</div>
+                                            <div className="result-icon">!</div>
                                             <p>{importResult.message}</p>
 
                                             {importResult.conflictedCodes && (
@@ -323,8 +343,7 @@ function BulkImportModal({ isOpen, onClose, onSuccess }) {
 
                         {error && (
                             <div className="error-message">
-                                <span className="error-icon">⚠️</span>
-                                <pre>{error}</pre>
+                                {error}
                             </div>
                         )}
                     </div>
@@ -387,7 +406,7 @@ function BulkImportModal({ isOpen, onClose, onSuccess }) {
                 type={toast.type}
                 isVisible={toast.isVisible}
                 onClose={hideToast}
-                duration={3000}
+                duration={1500}
             />
         </>
     );

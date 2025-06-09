@@ -3,6 +3,7 @@ import { createResident } from '../services/api';
 import { getErrorMessage } from '../constants/errorCodes';
 import Toast from './Toast';
 import '../styles/CreateResidentModal.css';
+import '../styles/modal-enhanced.css';
 
 function CreateResidentModal({ isOpen, onClose, onSuccess }) {
     const [formData, setFormData] = useState({
@@ -140,7 +141,7 @@ function CreateResidentModal({ isOpen, onClose, onSuccess }) {
                             onClick={handleClose}
                             disabled={loading}
                         >
-                            ✕
+                            ×
                         </button>
                     </div>
 
@@ -197,26 +198,19 @@ function CreateResidentModal({ isOpen, onClose, onSuccess }) {
 
                         <div className="form-group">
                             <label htmlFor="email" className="form-label">
-                                電子信箱
+                                電子信箱 <span className="optional">(選填)</span>
                             </label>
                             <input
                                 type="email"
                                 id="email"
                                 name="email"
                                 value={formData.email}
-                                onChange={(e) => {
-                                    // 保持原始大小寫，不做任何轉換
-                                    setFormData({ ...formData, email: e.target.value });
-                                    if (error) setError('');
-                                }}
-                                className="form-input form-input-email"
-                                placeholder="例如：Resident@Example.com"
+                                onChange={handleInputChange}
+                                className="form-input"
+                                placeholder="例如：resident@example.com"
                                 disabled={loading}
-                                autoCapitalize="none"
-                                autoComplete="email"
-                                style={{ textTransform: 'none' }}
                             />
-                            <div className="form-hint">信箱將保持您輸入的大小寫格式</div>
+                            <div className="form-hint">用於接收重要通知</div>
                         </div>
 
                         {error && (

@@ -182,17 +182,15 @@ function ResidentsList() {
       <div className="page-header">
         <div className="header-left">
           <h1 className="page-title">
-            <span className="title-icon">🏠</span>
             住戶清單
           </h1>
-          <p className="page-subtitle">管理社區住戶資訊</p>
         </div>
         <div className="header-actions">
           <button
             className="btn btn-primary"
             onClick={() => setIsCreateModalOpen(true)}
           >
-            ➕ 新增住戶
+            新增住戶
           </button>
           <button
             className="btn btn-secondary"

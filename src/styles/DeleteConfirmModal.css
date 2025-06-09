@@ -1,103 +1,232 @@
-.delete-modal-content {
-  background: white;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 480px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  animation: modalSlideIn 0.3s ease-out;
+/* 刪除確認對話框樣式 - 深色主題 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+  padding: var(--space-4);
+  animation: modalOverlayIn 0.3s ease-out;
 }
 
-.delete-modal-header {
-  padding: 24px 24px 16px;
-  text-align: center;
-  border-bottom: 1px solid #e5e7eb;
+.modal-content {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: 420px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.delete-warning-icon {
-  font-size: 3rem;
-  margin-bottom: 12px;
-}
-
-.delete-modal-title {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #dc2626;
-}
-
-.delete-modal-body {
-  padding: 24px;
-}
-
-.delete-warning-text {
-  margin: 0 0 20px;
-  font-size: 0.875rem;
-  color: #6b7280;
-  text-align: center;
-  line-height: 1.5;
-}
-
-.resident-info-card {
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 20px;
-}
-
-.resident-info-row {
+.modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--border-light);
+  background: var(--bg-tertiary);
+  position: relative;
 }
 
-.resident-info-row:last-child {
-  margin-bottom: 0;
+.modal-header::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--error-500), var(--error-600));
 }
 
-.info-label {
-  font-size: 0.875rem;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-.info-value {
-  font-size: 0.875rem;
-  color: #1f2937;
-  font-weight: 600;
-}
-
-.delete-error-alert {
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 6px;
-  padding: 12px;
+.modal-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--error-400);
+  margin: 0;
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #991b1b;
-  font-size: 0.875rem;
+  gap: var(--space-3);
 }
 
-.delete-modal-actions {
+.modal-title::before {
+  content: "🗑️";
+  font-size: 1.5rem;
+}
+
+.modal-close-btn {
+  background: var(--bg-quaternary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-full);
+  width: 40px;
+  height: 40px;
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 20px 24px 24px;
-  border-top: 1px solid #e5e7eb;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: var(--text-lg);
+}
+
+.modal-close-btn:hover {
+  background: var(--error-600);
+  border-color: var(--error-600);
+  color: var(--text-primary);
+  transform: scale(1.05);
+}
+
+.modal-body {
+  padding: var(--space-8);
+  text-align: center;
+}
+
+.warning-icon {
+  font-size: 4rem;
+  color: var(--error-400);
+  margin-bottom: var(--space-4);
+}
+
+.warning-message {
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+  font-weight: var(--font-semibold);
+}
+
+.warning-detail {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-6);
+  line-height: var(--leading-relaxed);
+}
+
+.resident-info {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin: var(--space-4) 0;
+  font-family: var(--font-family-mono);
+  color: var(--text-primary);
+  font-weight: var(--font-semibold);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border-top: 1px solid var(--border-light);
+  background: var(--bg-tertiary);
+}
+
+.btn {
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-width: 100px;
+}
+
+.btn-cancel {
+  background: transparent;
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: var(--bg-quaternary);
+  border-color: var(--border-dark);
+  transform: translateY(-1px);
 }
 
 .btn-danger {
-  background-color: #dc2626;
-  color: white;
+  background: var(--error-600);
+  border-color: var(--error-600);
+  color: var(--text-primary);
 }
 
 .btn-danger:hover:not(:disabled) {
-  background-color: #b91c1c;
+  background: var(--error-700);
+  border-color: var(--error-700);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -8px var(--error-600);
 }
 
-.btn-danger:disabled {
-  opacity: 0.6;
+.btn:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
+}
+
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid var(--text-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 響應式設計 */
+@media (max-width: 480px) {
+  .modal-content {
+    max-width: 95%;
+  }
+  
+  .modal-body {
+    padding: var(--space-6);
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+}
+
+/* 點擊外部彈跳動畫 */
+@keyframes modalBounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+@keyframes modalOverlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 } 
