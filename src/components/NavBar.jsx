@@ -9,28 +9,49 @@ export default function NavBar() {
   const location = useLocation();
   const navigate = useNavigate();
   const menuRef = useRef(null);
+  const timeoutRef = useRef(null);
 
-  // 點擊漢堡 / 嘗試開啟下拉選單
-  const toggleMenu = () => setIsMenuOpen(open => !open);
+  // 滑鼠移入時顯示選單
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setIsMenuOpen(true);
+  };
 
-  // 點擊外部收起
+  // 滑鼠移出時延遲隱藏選單
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsMenuOpen(false);
+    }, 200); // 200ms 延遲，讓用戶有時間移動到選單上
+  };
+
+  // 清理定時器
   useEffect(() => {
-    const handleClickOutside = e => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setIsMenuOpen(false);
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
     };
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
+  // 路由變化時關閉選單
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location.pathname]);
+
   const handleLogout = () => {
+    setIsMenuOpen(false);
     logout();
     navigate('/login', { replace: true });
   };
 
+  const handleMenuItemClick = () => {
+    setIsMenuOpen(false);
+  };
+
   return (
-    <nav className="navbar" ref={menuRef}>
+    <nav className="navbar">
       <div className="navbar-container">
         <Link to="/" className="logo">
           {isLoggedIn && communityName ? communityName : '社區系統'}
@@ -60,24 +81,44 @@ export default function NavBar() {
           {!isLoggedIn ? (
             <Link to="/login" className="btn-login">登入</Link>
           ) : (
-            <div className="user-dropdown">
-              <button className="user-btn" onClick={toggleMenu}>
+            <div
+              className="user-dropdown"
+              ref={menuRef}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <button
+                className="user-btn"
+                aria-expanded={isMenuOpen}
+                aria-haspopup="true"
+              >
                 {displayName}
               </button>
               {isMenuOpen && (
-                <ul className="dropdown-menu">
+                <ul className="dropdown-menu show">
                   <li>
-                    <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
+                    <Link
+                      to="/profile"
+                      onClick={handleMenuItemClick}
+                    >
                       個人資料
                     </Link>
                   </li>
                   {role === 'admin' && (
                     <li className={location.pathname === '/communities' ? 'active' : ''}>
-                      <Link to="/communities">社區管理</Link>
+                      <Link
+                        to="/communities"
+                        onClick={handleMenuItemClick}
+                      >
+                        社區管理
+                      </Link>
                     </li>
                   )}
                   <li>
-                    <button onClick={handleLogout} className="logout-btn">
+                    <button
+                      onClick={handleLogout}
+                      className="logout-btn"
+                    >
                       登出
                     </button>
                   </li>

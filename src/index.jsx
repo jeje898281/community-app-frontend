@@ -76,19 +76,19 @@ root.render(
                 <MeetingListPage />
               </RequireAuth>
             } />
-          </Route>
 
-          {/* 4. 單一會議上下文 - 需要特殊處理 */}
-          <Route path="meetings/:id" element={
-            <RequireAuth redirectTo="/please-login">
-              <MeetingLayout />
-            </RequireAuth>
-          }>
-            <Route index element={<Navigate to="scan" replace />} />
-            <Route path="scan" element={<ScanPage />} />
-            <Route path="manual" element={<ManualCheckIn />} />
-            <Route path="summary" element={<SummaryPage />} />
-            <Route path="qrcodes" element={<QRCodePage />} />
+            {/* 4. 單一會議上下文 - 也在 MainLayout 內 */}
+            <Route path="meetings/:id" element={
+              <RequireAuth redirectTo="/please-login">
+                <MeetingLayout />
+              </RequireAuth>
+            }>
+              <Route index element={<Navigate to="scan" replace />} />
+              <Route path="scan" element={<ScanPage />} />
+              <Route path="manual" element={<ManualCheckIn />} />
+              <Route path="summary" element={<SummaryPage />} />
+              <Route path="qrcodes" element={<QRCodePage />} />
+            </Route>
           </Route>
 
           {/* 5. 其他不存在的路由導回首頁 */}
